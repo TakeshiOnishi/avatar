@@ -17,6 +17,11 @@
 
     Open the `my-default-starter` directory in your code editor of choice and edit `src/pages/index.js`. Save your changes and the browser will update in real time!
 
+### 動作
+
+- [firebaseホスティング](https://multi-connect-f53ad.web.app/)
+- [デモ動画](./demo.mp4)
+
 ### deploy
 
 - `gatsby build`
