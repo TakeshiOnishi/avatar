@@ -1,4 +1,4 @@
-import React, { useState, createContext } from "react"
+import React, { useState, createContext, useEffect } from "react"
 import { UserStateContext } from "../components/layout"
 import firebase from "firebase/app"
 import 'firebase/auth'
@@ -11,48 +11,51 @@ const VirtualArea = () => {
 
   const [userList, setUserList] = useState([])
 
-  database.ref(spaceName).on("child_removed", function(data) {
-    const fbVal = data.val();
-
-    let newUserList = [...userList]
-    newUserList.some(function(v, i){
-      if (v.id == fbVal.id) newUserList.splice(i,1)
-    })
-    setUserList(newUserList)
-    console.log(userList)
-  })
-
-  database.ref(spaceName).on("child_added", function(data) {
-    const fbVal = data.val();
-
-    // LocalCreate
-    if(!userList.some(user => user.id == data.key)){
-      let newUserList = [...userList, {id:fbVal.id, name: fbVal.name, x:fbVal.x, y:fbVal.y}]
-      setUserList(newUserList)
-    }
-  })
-
-  database.ref(spaceName).on("child_changed", function(data) {
-    const fbVal = data.val();
-
-    // LocalChanged
-    if(userList.some(user => user.id == data.key)){
-      let newUserList = userList.map((user, index) => {
-        if(user.id == data.key) {
-          return {id:user.id, name: user.name, x:fbVal.x, y: fbVal.y}
-        }else{
-          return {id:user.id, name: user.name, x:user.x, y: user.y}
+  const modifyUserIcon = targetUserObj => {
+    setUserList(current => {
+      return current.map(user => {
+        if (user.id == targetUserObj.id) {
+          database.ref(`${spaceName}/${targetUserObj.id}`).set(targetUserObj)
+          return targetUserObj
         }
+        return user
+      })
+    })
+  }
+
+  // HACK: effectのタイミング調整 現在過度に発火
+  database.ref(spaceName).on("child_removed", data => {
+    const fbVal = data.val();
+    setUserList(current => {
+      return current.filter((el) => {
+        return el.id != fbVal.id;
       });
-      setUserList(newUserList)
-    }
+    })
   })
+
+  useEffect(
+    () => {
+      database.ref(spaceName).on("child_added", data => {
+        const fbVal = data.val();
+        const fbKey = data.key;
+        setUserList(current => [...current, {id:fbVal.id, name: fbVal.name, x:fbVal.x, y:fbVal.y}])
+      })
+    }, []
+  )
+
+  // FIXME: for Debug
+  // useEffect(
+    // () => {
+      // console.log(userList)
+    // }, [userList]
+  // )
+
 
   return(
     <>
       <div className="virtualArea">
         {userList.map(user => 
-          <UserIcon key={user.id} attribute={{id: user.id, name: user.name, x:user.x, y:user.y}} />
+          <UserIcon key={user.id} modifyUserIcon={modifyUserIcon} attribute={{id: user.id, name: user.name, x:user.x, y:user.y}} />
         )}
       </div>
     </>

@@ -13,40 +13,45 @@ const UserIcon = (props) => {
   const [userName, setUserName] = useState('')
   const [positionX, setPositionX] = useState(0)
   const [positionY, setPositionY] = useState(0)
+  const [upddatedAt, setUpddatedAt] = useState(0)
   let offsetX,offsetY
+
 
   useEffect(
     () => {
-      setPositionX(positionX)
-    }, [positionX]
+      if (userId == '') { return }
+      database.ref(`${spaceName}/${userId}`).on("child_changed", data => {
+        const fbKey = data.key
+        const fbVal = data.val()
+        switch (fbKey) {
+          case 'date': setUpddatedAt(fbVal); break
+          case 'name': setUserName(fbVal); break
+          case 'x': setPositionX(fbVal); break
+          case 'y': setPositionY(fbVal); break
+          default: console.log('invalid key'); break;
+        }
+      })
+    }, [userId]
   )
-  useEffect(
-    () => {
-      setPositionY(positionY)
-    }, [positionY]
-  )
+
+
   useEffect(
     () => {
       setUserId(attribute.id)
       setUserName(attribute.name)
       setPositionX(attribute.x)
       setPositionY(attribute.y)
-    }, [props]
+      setUpddatedAt(attribute.date)
+    }, [attribute]
   )
 
   const handleStop = (ev, ui) => {
-    let afterX = ui.x
-    let afterY = ui.y
     let now = new Date();
-
-    setPositionX(afterX)
-    setPositionY(afterY)
-
-    database.ref(`${spaceName}/${userId}`).set({
+    props.modifyUserIcon({
       id: userId,
       name: userName,
-      x: afterX,
-      y: afterY,
+      x: ui.x,
+      y: ui.y,
       date: now.getTime()
     })
   }
