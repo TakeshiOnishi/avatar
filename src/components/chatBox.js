@@ -13,10 +13,17 @@ const ChatBox = props => {
   let spaceName = 'chat'
   let userPositions = props.userPositions
   let database = firebase.database()
-  let rangeSelect = document.querySelector('.chatBox .rangeSelect')
-  let submitBtn = document.querySelector('.chatBox .submit')
-  let textInput = document.querySelector('.chatBox .textInput')
-  let errElm = document.querySelector('.chatBox .err')
+    // HACK: SSRでwindow無いエラーになるので一旦むりやり
+  let rangeSelect
+  let submitBtn
+  let textInput
+  let errElm
+  if (typeof window !== "undefined") {
+    rangeSelect = document.querySelector('.chatBox .rangeSelect')
+    submitBtn = document.querySelector('.chatBox .submit')
+    textInput = document.querySelector('.chatBox .textInput')
+    errElm = document.querySelector('.chatBox .err')
+  }
 
   const chatSend = () => {
     if(textInput.value.length >= maxTextLength) {
@@ -34,7 +41,10 @@ const ChatBox = props => {
     }
 
     let nearlyUserIds = []
-    let userIconRadius = document.querySelector(`.userIcon`).clientWidth / 2
+    let userIconRadius
+    if (typeof window !== "undefined") {
+      userIconRadius = document.querySelector(`.userIcon`).clientWidth / 2
+    }
     let myIconRadius = userIconRadius + rangeSizeMap(myRangeSelect)
     let [myPositionCenterX, myPositionCenterY] = 
       [
@@ -53,11 +63,13 @@ const ChatBox = props => {
       let diffR = (myIconRadius + userIconRadius) ** 2
       if(diffX + diffY <= diffR) {
         // HACK: この辺の強引処理を変更
-        document.querySelector(`[data-id="${id}"]`).classList.add('blink')
-        setTimeout(() => {
-          document.querySelector(`[data-id="${id}"]`).classList.remove('blink')
-        }, 2000)
-        nearlyUserIds.push(id)
+        if (typeof window !== "undefined") {
+          document.querySelector(`[data-id="${id}"]`).classList.add('blink')
+          setTimeout(() => {
+            document.querySelector(`[data-id="${id}"]`).classList.remove('blink')
+          }, 2000)
+          nearlyUserIds.push(id)
+        }
       }
     }
     database.ref(`${spaceName}/${myUserId}`).set({
