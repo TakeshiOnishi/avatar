@@ -1,5 +1,4 @@
-import React, { useState, createContext, useEffect } from "react"
-import { UserStateContext } from "../components/layout"
+import React, { useState, useEffect } from "react"
 import firebase from "firebase/app"
 import 'firebase/auth'
 import 'firebase/database'
@@ -15,7 +14,7 @@ const VirtualArea = () => {
     const fbVal = data.val();
     setUserIdList(current => {
       return current.filter(elm => {
-        return elm != fbVal.id;
+        return elm !== fbVal.id;
       });
     })
   })
@@ -24,10 +23,9 @@ const VirtualArea = () => {
     () => {
       database.ref(spaceName).on("child_added", data => {
         const fbVal = data.val();
-        const fbKey = data.key;
         setUserIdList(current => [...current, fbVal.id])
       })
-    }, []
+    }, [spaceName, database]
   )
 
   // FIXME: for Debug

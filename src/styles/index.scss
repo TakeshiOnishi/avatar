@@ -8,12 +8,21 @@
     position: absolute;
     width: 100px;
     height: 100px;
+    padding: 10px;
     border-radius: 50%;
     text-align: center;
     background: #EEE;
     font-size: 0.9rem;
     font-weight: bold;
     color: #222;
+    p {
+      margin: 0px;
+      padding: 0px;
+      &.lastTime {
+        font-size: .5rem;
+        font-weight: normal;
+      }
+    }
   }
   .myUserIcon {
     border: 2px solid #F00;

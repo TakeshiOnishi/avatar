@@ -1,5 +1,4 @@
-import React, { useState, createContext, useEffect } from "react"
-import { UserStateContext } from "../components/layout"
+import React from "react"
 import firebase from "firebase/app"
 import 'firebase/auth'
 import 'firebase/database'
@@ -34,7 +33,7 @@ const ChatBox = (props) => {
   }
 
   const handleKeyUp = ev => {
-    if(ev.keyCode == 13) {
+    if(ev.keyCode === 13) {
       submitBtn.click()
     }
   }

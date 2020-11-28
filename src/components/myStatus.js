@@ -1,4 +1,4 @@
-import React, { useState, createContext, useEffect } from "react"
+import React from "react"
 import { UserStateContext } from "../components/layout"
 
 const MyStatus = () => {

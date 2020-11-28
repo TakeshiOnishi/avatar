@@ -1,5 +1,6 @@
-import React, { useState, createContext } from "react"
+import React from "react"
 import { UserStateContext } from "../components/layout"
+import dayjs from "dayjs"
 import firebase from "firebase/app"
 import 'firebase/auth'
 import 'firebase/database'
@@ -9,13 +10,12 @@ const StatusControl = () => {
   let database = firebase.database()
 
   const joinRoom = (myUserId, myUserName) => {
-    let now = new Date();
     database.ref(`${spaceName}/${myUserId}`).set({
       id: myUserId,
       name: myUserName,
       x: 0,
       y: 0,
-      date: now.getTime()
+      date: dayjs().format('MM/DD HH:mm:ss')
     })
   }
 

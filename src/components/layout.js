@@ -43,7 +43,7 @@ const Layout = ({ children }) => {
           setMyUserName(user.displayName)
         }
         else {
-          if(window.location.pathname != '/login/') {
+          if(window.location.pathname !== '/login/') {
             window.location.replace(`/login/`)
           }
           ui.start('.js-firebaseAuth', uiConfig);
