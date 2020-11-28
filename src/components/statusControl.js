@@ -3,7 +3,6 @@ import { UserStateContext } from "../components/layout"
 import firebase from "firebase/app"
 import 'firebase/auth'
 import 'firebase/database'
-import UserIcon from "./userIcon.js"
 
 const StatusControl = () => {
   let spaceName = 'user'

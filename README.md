@@ -26,6 +26,13 @@
 - `gatsby build`
 - `firebase deploy`
 
+### react依存関係ビジュアライズ
+
+[madge](https://github.com/pahen/madge)
+
+```
+madge --exclude layout --image madge_graph.png src/pages/index.js
+```
 
 ## TODO
 
