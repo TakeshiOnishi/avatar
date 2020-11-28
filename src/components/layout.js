@@ -9,12 +9,25 @@ if (typeof window !== "undefined") {
   var firebaseui = require('firebaseui');
 }
 
+// HACK: libにしたい & sizeをAPI化
+export const rangeSizeMap = (sizeString) => {
+  let rangePixel
+  switch (sizeString) {
+    case 'S': rangePixel = 50 / 2; break
+    case 'M': rangePixel = 200 / 2; break
+    case 'L': rangePixel = 400 / 2; break
+    default: console.log('invalid val'); break;
+  }
+  return rangePixel
+}
+
 
 export const UserStateContext = createContext()
 
 const Layout = ({ children }) => {
   const [myUserId, setMyUserId] = useState('')
   const [myUserName, setMyUserName] = useState('')
+  const [myRangeSelect, setMyRangeSelect] = useState('M')
   const firebaseConfig = {
     apiKey: "AIzaSyCTPJpFP6vBuNhWwTDUZluq2zV-BatBtVU",
     authDomain: "multi-connect-f53ad.firebaseapp.com",
@@ -43,7 +56,7 @@ const Layout = ({ children }) => {
           setMyUserName(user.displayName)
         }
         else {
-          if(window.location.pathname != '/login/') {
+          if(window.location.pathname !== '/login/') {
             window.location.replace(`/login/`)
           }
           ui.start('.js-firebaseAuth', uiConfig);
@@ -54,7 +67,9 @@ const Layout = ({ children }) => {
 
   const userState = {
     myUserId: myUserId, 
-    myUserName: myUserName
+    myUserName: myUserName,
+    myRangeSelect: myRangeSelect,
+    setMyRangeSelect: setMyRangeSelect
   }
 
   return (

@@ -8,12 +8,101 @@
     position: absolute;
     width: 100px;
     height: 100px;
+    padding: 10px;
     border-radius: 50%;
     text-align: center;
     background: #EEE;
     font-size: 0.9rem;
     font-weight: bold;
     color: #222;
+    p {
+      margin: 0px;
+      padding: 0px;
+      &.lastTime {
+        font-size: .5rem;
+        font-weight: normal;
+      }
+    }
+    @keyframes flash {
+      0%,100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+    &.blink {
+      animation: flash 0.8s linear infinite;
+      background: #66CCFF;
+    }
+    @keyframes fadeO {
+      /* FIXME: CSSは仮 */
+      0% { opacity: 1; }
+      70% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+    .chatMessage {
+      /* FIXME: CSSは仮 */
+      animation: fadeO 3s linear 0s;
+      animation-fill-mode: forwards;
+      position: relative;
+      display: inline-block;
+      margin: 1.5em 0;
+      padding: 7px 10px;
+      min-width: 120px;
+      max-width: 100%;
+      color: #555;
+      font-size: 16px;
+      background: #e0edff;
+      z-index: 999;
+      &::before {
+        content: "";
+        position: absolute;
+        top: -30px;
+        left: 50%;
+        margin-left: -15px;
+        border: 15px solid transparent;
+        border-bottom: 15px solid #e0edff;
+      }
+      p {
+        margin: 0;
+        padding: 0;
+      }
+    }
+  }
+  .myUserIcon {
+    border: 2px solid #BB0;
+    cursor: pointer;
+  }
+
+  $sizeSmall: 50px;
+  $sizeMedium: 200px;
+  $sizeLarge: 400px;
+  .rangeSizeS {
+    position: absolute;
+    content: '';
+    width: calc(100% + #{$sizeSmall});
+    height: calc(100% + #{$sizeSmall});
+    top: calc(#{$sizeSmall} / 2 * -1);
+    left: calc(#{$sizeSmall} / 2 * -1);
+    border: 2px dotted #F00;
+    border-radius: 50%
+  }
+  .rangeSizeM {
+    position: absolute;
+    content: '';
+    width: calc(100% + #{$sizeMedium});
+    height: calc(100% + #{$sizeMedium});
+    top: calc(#{$sizeMedium} / 2 * -1);
+    left: calc(#{$sizeMedium} / 2 * -1);
+    border: 2px dotted #F00;
+    border-radius: 50%
+  }
+  .rangeSizeL {
+    position: absolute;
+    content: '';
+    width: calc(100% + #{$sizeLarge});
+    height: calc(100% + #{$sizeLarge});
+    top: calc(#{$sizeLarge} / 2 * -1);
+    left: calc(#{$sizeLarge} / 2 * -1);
+    border: 2px dotted #F00;
+    border-radius: 50%
   }
 }
 
@@ -21,4 +110,22 @@
 .outRoomBtn {
   margin: 10px;
   padding: 5px 10px;
+}
+
+/*chatbox*/
+.chatBox {
+  margin: 10px;
+  .rangeSelect {
+    padding: .5rem;
+    width: 15%;
+  }
+  .textInput {
+    margin: 0 5%;
+    padding: .5rem;
+    width: 50%;
+  }
+  .submit {
+    padding: .5rem;
+    width: 10%;
+  }
 }
