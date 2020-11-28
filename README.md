@@ -34,7 +34,7 @@
 madge --exclude layout --image madge_graph.png src/pages/index.js
 ```
 
-[image](./madge_graph.png)
+<img src="./madge_graph.png" />
 
 ## TODO
 
