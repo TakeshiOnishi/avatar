@@ -68,7 +68,7 @@ const UserIcon = (props) => {
         }
       })
 
-    }, [userId, spaceName, chatSpaceName, database]
+    }, [userId, myUserId, chatFreshnessSecond, spaceName, chatSpaceName, database]
   )
 
   useEffect(
@@ -109,7 +109,7 @@ const UserIcon = (props) => {
       <UserStateContext.Consumer>
         {(user) => {
           // let isMe = true
-          let isMe = (user.myUserId == userId)
+          let isMe = (user.myUserId === userId)
           if(isMe){
             return (
               <Draggable 
