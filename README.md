@@ -34,6 +34,8 @@
 madge --exclude layout --image madge_graph.png src/pages/index.js
 ```
 
+[image](./madge_graph.png)
+
 ## TODO
 
 + 位置情報
