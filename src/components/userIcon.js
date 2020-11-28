@@ -53,29 +53,58 @@ const UserIcon = (props) => {
   const handleDrag = (_ev, ui) => {
     setDragPxCount(dragPxCount + 1)
     if (dragPxCount % 20 == 0) {
-      let now = new Date();
-      database.ref(`${spaceName}/${userId}`).set({
-        id: userId,
-        name: userName,
-        x: ui.x,
-        y: ui.y,
-        date: now.getTime()
-      })
+      setFirebaseDB(ui)
     }
+  }
+  const handleStop = (_ev, ui) => {
+    setFirebaseDB(ui)
+  }
+
+  const setFirebaseDB = (ui) => {
+    let now = new Date();
+    database.ref(`${spaceName}/${userId}`).set({
+      id: userId,
+      name: userName,
+      x: ui.x,
+      y: ui.y,
+      date: now.getTime()
+    })
   }
 
   return(
     <>
-      <Draggable 
-        bounds="parent"
-        position={{x: positionX, y: positionY}}
-        onDrag={handleDrag}
-      >
-        <div className="userIcon">
-          <p>{userName}</p>
-          <p>({positionX}, {positionY})</p>
-        </div>
-      </Draggable>
+      <UserStateContext.Consumer>
+        {(user) => {
+          let isMe = true // (user.myUserId == userId)
+          if(isMe){
+            return (
+              <Draggable 
+              bounds="parent"
+              position={{x: positionX, y: positionY}}
+              onDrag={handleDrag}
+              onStop={handleStop}
+              >
+              <div className="userIcon myUserIcon">
+              <p>{userName}</p>
+              <p>({positionX}, {positionY})</p>
+              </div>
+              </Draggable>
+            )
+          }else{
+            return (
+            <Draggable 
+              position={{x: positionX, y: positionY}}
+              disabled={true}
+            >
+              <div className="userIcon">
+                <p>{userName}</p>
+                <p>({positionX}, {positionY})</p>
+              </div>
+            </Draggable>
+            )
+          }
+        }}
+      </UserStateContext.Consumer>
     </>
   )
 }
