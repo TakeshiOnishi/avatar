@@ -9,26 +9,13 @@ const VirtualArea = () => {
   let spaceName = 'user'
   let database = firebase.database()
 
-  const [userList, setUserList] = useState([])
+  const [userIdList, setUserIdList] = useState([])
 
-  const modifyUserIcon = targetUserObj => {
-    setUserList(current => {
-      return current.map(user => {
-        if (user.id == targetUserObj.id) {
-          database.ref(`${spaceName}/${targetUserObj.id}`).set(targetUserObj)
-          return targetUserObj
-        }
-        return user
-      })
-    })
-  }
-
-  // HACK: effectのタイミング調整 現在過度に発火
   database.ref(spaceName).on("child_removed", data => {
     const fbVal = data.val();
-    setUserList(current => {
-      return current.filter((el) => {
-        return el.id != fbVal.id;
+    setUserIdList(current => {
+      return current.filter(elm => {
+        return elm != fbVal.id;
       });
     })
   })
@@ -38,7 +25,7 @@ const VirtualArea = () => {
       database.ref(spaceName).on("child_added", data => {
         const fbVal = data.val();
         const fbKey = data.key;
-        setUserList(current => [...current, {id:fbVal.id, name: fbVal.name, x:fbVal.x, y:fbVal.y}])
+        setUserIdList(current => [...current, fbVal.id])
       })
     }, []
   )
@@ -46,16 +33,15 @@ const VirtualArea = () => {
   // FIXME: for Debug
   // useEffect(
     // () => {
-      // console.log(userList)
-    // }, [userList]
+      // console.log(userIdList)
+    // }, [userIdList]
   // )
-
 
   return(
     <>
       <div className="virtualArea">
-        {userList.map(user => 
-          <UserIcon key={user.id} modifyUserIcon={modifyUserIcon} attribute={{id: user.id, name: user.name, x:user.x, y:user.y}} />
+        {userIdList.map(userId => 
+          <UserIcon key={userId} id={userId} />
         )}
       </div>
     </>

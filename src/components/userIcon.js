@@ -8,7 +8,6 @@ import 'firebase/database'
 const UserIcon = (props) => {
   let spaceName = 'user'
   let database = firebase.database()
-  let attribute = props.attribute
   const [userId, setUserId] = useState('')
   const [userName, setUserName] = useState('')
   const [positionX, setPositionX] = useState(0)
@@ -16,10 +15,27 @@ const UserIcon = (props) => {
   const [upddatedAt, setUpddatedAt] = useState(0)
   let offsetX,offsetY
 
+  const updateIconAttr = iconAttrObj => {
+    setUpddatedAt(iconAttrObj.date)
+    setUserName(iconAttrObj.name)
+    setPositionX(iconAttrObj.x)
+    setPositionY(iconAttrObj.y)
+  }
+
+  useEffect(
+    () => {
+      setUserId(props.id)
+    }, []
+  )
 
   useEffect(
     () => {
       if (userId == '') { return }
+
+      database.ref(`${spaceName}/${userId}`).once('value', data => {
+        updateIconAttr(data.val())
+      })
+
       database.ref(`${spaceName}/${userId}`).on("child_changed", data => {
         const fbKey = data.key
         const fbVal = data.val()
@@ -34,20 +50,9 @@ const UserIcon = (props) => {
     }, [userId]
   )
 
-
-  useEffect(
-    () => {
-      setUserId(attribute.id)
-      setUserName(attribute.name)
-      setPositionX(attribute.x)
-      setPositionY(attribute.y)
-      setUpddatedAt(attribute.date)
-    }, [attribute]
-  )
-
   const handleStop = (ev, ui) => {
     let now = new Date();
-    props.modifyUserIcon({
+    database.ref(`${spaceName}/${userId}`).set({
       id: userId,
       name: userName,
       x: ui.x,
