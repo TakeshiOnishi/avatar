@@ -3,12 +3,14 @@ import firebase from "firebase/app"
 import 'firebase/auth'
 import 'firebase/database'
 import UserIcon from "./userIcon.js"
+import ChatBox from "../components/ChatBox"
 
 const VirtualArea = () => {
   let spaceName = 'user'
   let database = firebase.database()
 
   const [userIdList, setUserIdList] = useState([])
+  const [userPositions, setUserPositions] = useState({})
 
   database.ref(spaceName).on("child_removed", data => {
     const fbVal = data.val();
@@ -37,9 +39,10 @@ const VirtualArea = () => {
 
   return(
     <>
+      <ChatBox userPositions={userPositions} />
       <div className="virtualArea">
         {userIdList.map(userId => 
-          <UserIcon key={userId} id={userId} />
+          <UserIcon key={userId} id={userId} setUserPositions={setUserPositions}  />
         )}
       </div>
     </>

@@ -23,10 +23,51 @@
         font-weight: normal;
       }
     }
+    @keyframes flash {
+      0%,100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+    &.blink {
+      animation: flash 0.8s linear infinite;
+      background: #66CCFF;
+    }
   }
   .myUserIcon {
-    border: 2px solid #F00;
+    border: 2px solid #BB0;
     cursor: pointer;
+  }
+  $sizeSmall: 50px;
+  $sizeMedium: 200px;
+  $sizeLarge: 400px;
+  .rangeSizeS {
+    position: absolute;
+    content: '';
+    width: calc(100% + #{$sizeSmall});
+    height: calc(100% + #{$sizeSmall});
+    top: calc(#{$sizeSmall} / 2 * -1);
+    left: calc(#{$sizeSmall} / 2 * -1);
+    border: 2px dotted #F00;
+    border-radius: 50%
+  }
+  .rangeSizeM {
+    position: absolute;
+    content: '';
+    width: calc(100% + #{$sizeMedium});
+    height: calc(100% + #{$sizeMedium});
+    top: calc(#{$sizeMedium} / 2 * -1);
+    left: calc(#{$sizeMedium} / 2 * -1);
+    border: 2px dotted #F00;
+    border-radius: 50%
+  }
+  .rangeSizeL {
+    position: absolute;
+    content: '';
+    width: calc(100% + #{$sizeLarge});
+    height: calc(100% + #{$sizeLarge});
+    top: calc(#{$sizeLarge} / 2 * -1);
+    left: calc(#{$sizeLarge} / 2 * -1);
+    border: 2px dotted #F00;
+    border-radius: 50%
   }
 }
 

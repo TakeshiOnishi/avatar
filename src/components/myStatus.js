@@ -6,7 +6,7 @@ const MyStatus = () => {
   return(
     <UserStateContext.Consumer>
     {(user) => {
-      return(<div>{user.myUserId} - {user.myUserName}</div>)
+      return(<div>{user.myUserId} - {user.myUserName} - {user.myRangeSelect}</div>)
     }}
     </UserStateContext.Consumer>
   )

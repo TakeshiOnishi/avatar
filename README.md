@@ -55,6 +55,7 @@ madge --exclude layout --image madge_graph.png src/pages/index.js
 
 ## OTHER
 
-+ 書き込みを減らすためにドラッグ完了後にイベントpush
-+ フロントエンドはGatsby (React使いたいのとページルーティングが楽だったので)
-+ CSSはクラススタイルを適用 / 一部計算量が多いところはinlineCSS
++ サイズ: 
+    + Small: 50px
+    + Medium: 200px
+    + Large: 400px

@@ -7,8 +7,11 @@ import 'firebase/auth'
 import 'firebase/database'
 
 const UserIcon = (props) => {
+  const chatFreshnessSecond = 60
   let spaceName = 'user'
+  let chatSpaceName = 'chat' // TODO: この辺の変数名をglobal化
   let database = firebase.database()
+  const setUserPositions = props.setUserPositions
   const [userId, setUserId] = useState('')
   const [userName, setUserName] = useState('')
   const [positionX, setPositionX] = useState(0)
@@ -27,6 +30,21 @@ const UserIcon = (props) => {
     () => {
       setUserId(props.id)
     }, [props.id]
+  )
+
+  useEffect(
+    () => {
+      if (userId === '') { return }
+      database.ref(`${chatSpaceName}/${userId}`).on('value', data => {
+        const fbVal = data.val()
+        if (fbVal === null) { return }
+        let secondDiff = dayjs(fbVal.date).diff(dayjs(), 'second')
+        if(secondDiff >= chatFreshnessSecond){
+          console.log('cacth - message')
+        }
+      })
+
+    }, [chatSpaceName, userId ,database]
   )
 
   useEffect(
@@ -51,6 +69,15 @@ const UserIcon = (props) => {
     }, [userId, spaceName, database]
   )
 
+  useEffect(
+    () => {
+      if (userId === '') { return }
+      setUserPositions(current => {
+        return {...current, [userId]: { x: positionX, y: positionY}}
+      })
+    }, [userId, positionX, positionY, setUserPositions]
+  )
+
   const handleDrag = (_ev, ui) => {
     setDragPxCount(dragPxCount + 1)
     if (dragPxCount % 20 === 0) {
@@ -67,7 +94,7 @@ const UserIcon = (props) => {
       name: userName,
       x: ui.x,
       y: ui.y,
-      date: dayjs().format('MM/DD HH:mm:ss')
+      date: dayjs().format('YYYY/MM/DD HH:mm:ss')
     })
   }
 
@@ -84,10 +111,11 @@ const UserIcon = (props) => {
               onDrag={handleDrag}
               onStop={handleStop}
               >
-              <div className="userIcon myUserIcon">
+              <div data-id={userId} className='userIcon myUserIcon'>
                 <p>{userName}</p>
                 <p>({positionX}, {positionY})</p>
                 <p className='lastTime'>{updatedAt}</p>
+                <div className={`rangeSize${user.myRangeSelect}`} />
               </div>
               </Draggable>
             )
