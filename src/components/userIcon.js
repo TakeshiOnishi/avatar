@@ -52,7 +52,7 @@ const UserIcon = (props) => {
 
   const handleDrag = (_ev, ui) => {
     setDragPxCount(dragPxCount + 1)
-    if (dragPxCount % 5 == 0) {
+    if (dragPxCount % 20 == 0) {
       let now = new Date();
       database.ref(`${spaceName}/${userId}`).set({
         id: userId,
