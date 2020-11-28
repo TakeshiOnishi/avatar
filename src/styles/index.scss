@@ -31,11 +31,46 @@
       animation: flash 0.8s linear infinite;
       background: #66CCFF;
     }
+    @keyframes fadeO {
+      /* FIXME: CSSは仮 */
+      0% { opacity: 1; }
+      70% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+    .chatMessage {
+      /* FIXME: CSSは仮 */
+      animation: fadeO 3s linear 0s;
+      animation-fill-mode: forwards;
+      position: relative;
+      display: inline-block;
+      margin: 1.5em 0;
+      padding: 7px 10px;
+      min-width: 120px;
+      max-width: 100%;
+      color: #555;
+      font-size: 16px;
+      background: #e0edff;
+      z-index: 999;
+      &::before {
+        content: "";
+        position: absolute;
+        top: -30px;
+        left: 50%;
+        margin-left: -15px;
+        border: 15px solid transparent;
+        border-bottom: 15px solid #e0edff;
+      }
+      p {
+        margin: 0;
+        padding: 0;
+      }
+    }
   }
   .myUserIcon {
     border: 2px solid #BB0;
     cursor: pointer;
   }
+
   $sizeSmall: 50px;
   $sizeMedium: 200px;
   $sizeLarge: 400px;

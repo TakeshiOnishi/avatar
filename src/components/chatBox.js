@@ -61,7 +61,6 @@ const ChatBox = props => {
       }
     }
     database.ref(`${spaceName}/${myUserId}`).set({
-      size: rangeSelect.value,
       message: textInput.value,
       date: dayjs().format('YYYY/MM/DD HH:mm:ss'),
       targetUserIds: nearlyUserIds
@@ -71,7 +70,7 @@ const ChatBox = props => {
   }
 
   const handleKeyUp = ev => {
-    if(ev.keyCode === 13) {
+    if(ev.which === 13) {
       submitBtn.click()
     }
   }
@@ -85,7 +84,7 @@ const ChatBox = props => {
         <option value='M'>中</option>
         <option value='S'>小</option>
       </select>
-      <input type='text' className='textInput' onKeyUp={handleKeyUp} placeholder={`チャット内容 ${maxTextLength}文字まで`} />
+      <input type='text' className='textInput' onKeyPress={handleKeyUp} placeholder={`チャット内容 ${maxTextLength}文字まで`} />
       <input type='button' className='submit' onClick={chatSend} value='送信' />
       <p className='err'></p>
     </div>

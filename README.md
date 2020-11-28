@@ -38,23 +38,18 @@ madge --exclude layout --image madge_graph.png src/pages/index.js
 
 ## TODO
 
-+ 位置情報
 + ユーザーの画像情報を登録
   + realTimeDataBaseにすると量が増えるから設定系を別のパスにしたほうがいいかも
   + 画像保存先が悩ましいけどbase64で保存するとかすれば楽かも
-+ チャット送信
-  + 近くにいる部分は x, yの差分計算をクライアントで行って対象tokenIDを取得して指定push
-    + テキストをDBに残す? 残さない?
-    + Firebase CloudMessagingを使えば行けそう
 + ステータス
   + マスター管理を FireStore? ...あるいはrealTimeDataBaseでroomを分ける (マスター管理)
   + RTDなら`{uid: xxxxx, st_name: '離席', st_type: 1}` , `ラベルは自由でtypeで制限するとか
-+ レイアウト
-  + 仮充でださいので誰か Reactで適当に修正
-  
++ レイアウト(css)
 
 ## OTHER
 
++ チャットはUserIdをkeyにしたObjectに格納してる
+  + ので、過去の分は保持ていない
 + サイズ: 
     + Small: 50px
     + Medium: 200px

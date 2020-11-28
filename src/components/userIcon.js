@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useContext } from "react"
 import { UserStateContext } from "../components/layout"
 import Draggable from 'react-draggable'; // The default
 import firebase from "firebase/app"
@@ -7,7 +7,8 @@ import 'firebase/auth'
 import 'firebase/database'
 
 const UserIcon = (props) => {
-  const chatFreshnessSecond = 60
+  const { myUserId } = useContext(UserStateContext)
+  const chatFreshnessSecond = -600
   let spaceName = 'user'
   let chatSpaceName = 'chat' // TODO: この辺の変数名をglobal化
   let database = firebase.database()
@@ -18,6 +19,7 @@ const UserIcon = (props) => {
   const [positionY, setPositionY] = useState(0)
   const [updatedAt, setUpdatedAt] = useState(0)
   const [dragPxCount, setDragPxCount] = useState(0)
+  const [chatMessageList, setChatMessageList] = useState([])
 
   const updateIconAttr = iconAttrObj => {
     setUpdatedAt(iconAttrObj.date)
@@ -30,21 +32,6 @@ const UserIcon = (props) => {
     () => {
       setUserId(props.id)
     }, [props.id]
-  )
-
-  useEffect(
-    () => {
-      if (userId === '') { return }
-      database.ref(`${chatSpaceName}/${userId}`).on('value', data => {
-        const fbVal = data.val()
-        if (fbVal === null) { return }
-        let secondDiff = dayjs(fbVal.date).diff(dayjs(), 'second')
-        if(secondDiff >= chatFreshnessSecond){
-          console.log('cacth - message')
-        }
-      })
-
-    }, [chatSpaceName, userId ,database]
   )
 
   useEffect(
@@ -66,7 +53,22 @@ const UserIcon = (props) => {
           default: console.log('invalid key'); break;
         }
       })
-    }, [userId, spaceName, database]
+
+      database.ref(`${chatSpaceName}/${userId}`).on('value', data => {
+        const fbVal = data.val()
+        if (fbVal === null) { return }
+        let secondDiff = dayjs(fbVal.date).diff(dayjs(), 'second')
+        if(secondDiff >= chatFreshnessSecond){
+          let messageToMe = fbVal.targetUserIds.includes(myUserId)
+          if(messageToMe){
+            setChatMessageList(current => 
+              [...current, fbVal.message]
+            )
+          }
+        }
+      })
+
+    }, [userId, spaceName, chatSpaceName, database]
   )
 
   useEffect(
@@ -98,11 +100,16 @@ const UserIcon = (props) => {
     })
   }
 
+  const handleAnimationEnd = ev => {
+    ev.target.style.display = 'none'
+  }
+
   return(
     <>
       <UserStateContext.Consumer>
         {(user) => {
-          let isMe = true // (user.myUserId == userId)
+          // let isMe = true
+          let isMe = (user.myUserId == userId)
           if(isMe){
             return (
               <Draggable 
@@ -111,12 +118,21 @@ const UserIcon = (props) => {
               onDrag={handleDrag}
               onStop={handleStop}
               >
-              <div data-id={userId} className='userIcon myUserIcon'>
-                <p>{userName}</p>
-                <p>({positionX}, {positionY})</p>
-                <p className='lastTime'>{updatedAt}</p>
-                <div className={`rangeSize${user.myRangeSelect}`} />
-              </div>
+                <div data-id={userId} className='userIcon myUserIcon'>
+                  <p>{userName}</p>
+                  <p>({positionX}, {positionY})</p>
+                  <p className='lastTime'>{updatedAt}</p>
+                  <div className={`rangeSize${user.myRangeSelect}`} />
+                  {chatMessageList.map((chatMessage, index) => 
+                    <div key={index} className='chatMessage' onAnimationEnd={handleAnimationEnd}>
+                      <div>
+                        <p>
+                          {chatMessage}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </Draggable>
             )
           }else{
@@ -125,10 +141,19 @@ const UserIcon = (props) => {
               position={{x: positionX, y: positionY}}
               disabled={true}
             >
-              <div className="userIcon">
+              <div data-id={userId} className='userIcon'>
                 <p>{userName}</p>
                 <p>({positionX}, {positionY})</p>
                 <p className='lastTime'>{updatedAt}</p>
+                {chatMessageList.map((chatMessage, index) => 
+                  <div key={index} className='chatMessage' onAnimationEnd={handleAnimationEnd}>
+                    <div>
+                      <p>
+                        {chatMessage}
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
             </Draggable>
             )
