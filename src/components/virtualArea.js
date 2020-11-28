@@ -1,4 +1,4 @@
-import React, { useState, createContext } from "react"
+import React, { useState, createContext, useEffect } from "react"
 import { UserStateContext } from "../components/layout"
 import firebase from "firebase/app"
 import 'firebase/auth'
@@ -9,50 +9,39 @@ const VirtualArea = () => {
   let spaceName = 'user'
   let database = firebase.database()
 
-  const [userList, setUserList] = useState([])
+  const [userIdList, setUserIdList] = useState([])
 
-  database.ref(spaceName).on("child_removed", function(data) {
+  database.ref(spaceName).on("child_removed", data => {
     const fbVal = data.val();
-
-    let newUserList = [...userList]
-    newUserList.some(function(v, i){
-      if (v.id == fbVal.id) newUserList.splice(i,1)
-    })
-    setUserList(newUserList)
-    console.log(userList)
-  })
-
-  database.ref(spaceName).on("child_added", function(data) {
-    const fbVal = data.val();
-
-    // LocalCreate
-    if(!userList.some(user => user.id == data.key)){
-      let newUserList = [...userList, {id:fbVal.id, name: fbVal.name, x:fbVal.x, y:fbVal.y}]
-      setUserList(newUserList)
-    }
-  })
-
-  database.ref(spaceName).on("child_changed", function(data) {
-    const fbVal = data.val();
-
-    // LocalChanged
-    if(userList.some(user => user.id == data.key)){
-      let newUserList = userList.map((user, index) => {
-        if(user.id == data.key) {
-          return {id:user.id, name: user.name, x:fbVal.x, y: fbVal.y}
-        }else{
-          return {id:user.id, name: user.name, x:user.x, y: user.y}
-        }
+    setUserIdList(current => {
+      return current.filter(elm => {
+        return elm != fbVal.id;
       });
-      setUserList(newUserList)
-    }
+    })
   })
+
+  useEffect(
+    () => {
+      database.ref(spaceName).on("child_added", data => {
+        const fbVal = data.val();
+        const fbKey = data.key;
+        setUserIdList(current => [...current, fbVal.id])
+      })
+    }, []
+  )
+
+  // FIXME: for Debug
+  // useEffect(
+    // () => {
+      // console.log(userIdList)
+    // }, [userIdList]
+  // )
 
   return(
     <>
       <div className="virtualArea">
-        {userList.map(user => 
-          <UserIcon key={user.id} attribute={{id: user.id, name: user.name, x:user.x, y:user.y}} />
+        {userIdList.map(userId => 
+          <UserIcon key={userId} id={userId} />
         )}
       </div>
     </>

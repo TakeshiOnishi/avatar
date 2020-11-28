@@ -20,7 +20,6 @@
 ### 動作
 
 - [firebaseホスティング](https://multi-connect-f53ad.web.app/)
-- [デモ動画](./demo.mp4)
 
 ### deploy
 
@@ -31,7 +30,6 @@
 ## TODO
 
 + 位置情報
-  + react-draggableのバグ? FBの値が変わってなくとも複数同記事にattributeが変わり座標がずれる (処理を追う)
 + ユーザーの画像情報を登録
   + realTimeDataBaseにすると量が増えるから設定系を別のパスにしたほうがいいかも
   + 画像保存先が悩ましいけどbase64で保存するとかすれば楽かも

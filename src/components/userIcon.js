@@ -8,47 +8,60 @@ import 'firebase/database'
 const UserIcon = (props) => {
   let spaceName = 'user'
   let database = firebase.database()
-  let attribute = props.attribute
   const [userId, setUserId] = useState('')
   const [userName, setUserName] = useState('')
   const [positionX, setPositionX] = useState(0)
   const [positionY, setPositionY] = useState(0)
-  let offsetX,offsetY
+  const [upddatedAt, setUpddatedAt] = useState(0)
+  const [dragPxCount, setDragPxCount] = useState(0)
+
+  const updateIconAttr = iconAttrObj => {
+    setUpddatedAt(iconAttrObj.date)
+    setUserName(iconAttrObj.name)
+    setPositionX(iconAttrObj.x)
+    setPositionY(iconAttrObj.y)
+  }
 
   useEffect(
     () => {
-      setPositionX(positionX)
-    }, [positionX]
+      setUserId(props.id)
+    }, []
   )
+
   useEffect(
     () => {
-      setPositionY(positionY)
-    }, [positionY]
+      if (userId == '') { return }
+
+      database.ref(`${spaceName}/${userId}`).once('value', data => {
+        updateIconAttr(data.val())
+      })
+
+      database.ref(`${spaceName}/${userId}`).on("child_changed", data => {
+        const fbKey = data.key
+        const fbVal = data.val()
+        switch (fbKey) {
+          case 'date': setUpddatedAt(fbVal); break
+          case 'name': setUserName(fbVal); break
+          case 'x': setPositionX(fbVal); break
+          case 'y': setPositionY(fbVal); break
+          default: console.log('invalid key'); break;
+        }
+      })
+    }, [userId]
   )
-  useEffect(
-    () => {
-      setUserId(attribute.id)
-      setUserName(attribute.name)
-      setPositionX(attribute.x)
-      setPositionY(attribute.y)
-    }, [props]
-  )
 
-  const handleStop = (ev, ui) => {
-    let afterX = ui.x
-    let afterY = ui.y
-    let now = new Date();
-
-    setPositionX(afterX)
-    setPositionY(afterY)
-
-    database.ref(`${spaceName}/${userId}`).set({
-      id: userId,
-      name: userName,
-      x: afterX,
-      y: afterY,
-      date: now.getTime()
-    })
+  const handleDrag = (_ev, ui) => {
+    setDragPxCount(dragPxCount + 1)
+    if (dragPxCount % 5 == 0) {
+      let now = new Date();
+      database.ref(`${spaceName}/${userId}`).set({
+        id: userId,
+        name: userName,
+        x: ui.x,
+        y: ui.y,
+        date: now.getTime()
+      })
+    }
   }
 
   return(
@@ -56,7 +69,7 @@ const UserIcon = (props) => {
       <Draggable 
         bounds="parent"
         position={{x: positionX, y: positionY}}
-        onStop={handleStop}
+        onDrag={handleDrag}
       >
         <div className="userIcon">
           <p>{userName}</p>
