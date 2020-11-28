@@ -59,6 +59,7 @@ const UserIcon = (props) => {
         if (fbVal === null) { return }
         let secondDiff = dayjs(fbVal.date).diff(dayjs(), 'second')
         if(secondDiff >= chatFreshnessSecond){
+          if(fbVal.targetUserIds === undefined) { return }
           let messageToMe = fbVal.targetUserIds.includes(myUserId)
           if(messageToMe){
             setChatMessageList(current => 
