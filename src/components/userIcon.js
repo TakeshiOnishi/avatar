@@ -13,7 +13,7 @@ const UserIcon = (props) => {
   const [positionX, setPositionX] = useState(0)
   const [positionY, setPositionY] = useState(0)
   const [upddatedAt, setUpddatedAt] = useState(0)
-  let offsetX,offsetY
+  const [dragPxCount, setDragPxCount] = useState(0)
 
   const updateIconAttr = iconAttrObj => {
     setUpddatedAt(iconAttrObj.date)
@@ -50,15 +50,18 @@ const UserIcon = (props) => {
     }, [userId]
   )
 
-  const handleStop = (ev, ui) => {
-    let now = new Date();
-    database.ref(`${spaceName}/${userId}`).set({
-      id: userId,
-      name: userName,
-      x: ui.x,
-      y: ui.y,
-      date: now.getTime()
-    })
+  const handleDrag = (_ev, ui) => {
+    setDragPxCount(dragPxCount + 1)
+    if (dragPxCount % 5 == 0) {
+      let now = new Date();
+      database.ref(`${spaceName}/${userId}`).set({
+        id: userId,
+        name: userName,
+        x: ui.x,
+        y: ui.y,
+        date: now.getTime()
+      })
+    }
   }
 
   return(
@@ -66,7 +69,7 @@ const UserIcon = (props) => {
       <Draggable 
         bounds="parent"
         position={{x: positionX, y: positionY}}
-        onStop={handleStop}
+        onDrag={handleDrag}
       >
         <div className="userIcon">
           <p>{userName}</p>
