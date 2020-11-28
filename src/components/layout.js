@@ -27,7 +27,7 @@ export const UserStateContext = createContext()
 const Layout = ({ children }) => {
   const [myUserId, setMyUserId] = useState('')
   const [myUserName, setMyUserName] = useState('')
-  const [myRangeSelect, setMyRangeSelect] = useState('S')
+  const [myRangeSelect, setMyRangeSelect] = useState('M')
   const firebaseConfig = {
     apiKey: "AIzaSyCTPJpFP6vBuNhWwTDUZluq2zV-BatBtVU",
     authDomain: "multi-connect-f53ad.firebaseapp.com",
