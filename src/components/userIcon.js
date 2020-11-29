@@ -51,7 +51,9 @@ const UserIcon = (props) => {
         if (fbVal === null) { return }
         setUserIconStyle({
           backgroundImage: `url(${fbVal.iconURL})`,
-          backgroundSize: 'contain'
+          backgroundSize: 'contain',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center center',
         })
       })
 
@@ -102,7 +104,7 @@ const UserIcon = (props) => {
 
   const handleDrag = (_ev, ui) => {
     setDragPxCount(dragPxCount + 1)
-    if (dragPxCount % 10 === 0) {
+    if (dragPxCount % 15 === 0) {
       setFirebaseDB(ui)
     }
   }
