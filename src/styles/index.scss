@@ -145,3 +145,46 @@
     width: 10%;
   }
 }
+
+/* modal */
+.userSettingModalOpenBtn {
+  margin: 10px;
+}
+.userSettingModalCloseBtn {
+  position: absolute;
+  top: 2%;
+  right: 2%;
+}
+
+.userSettingModal {
+  position: absolute;
+  top: 20%;
+  left: 20%;
+  right: 20%;
+  bottom: 20%;
+  padding: 5%;
+  background: rgba(220, 220, 220, 1);
+  outline: none;
+
+  .iconUrl {
+    .inputUrl {
+      width: 100%;
+    }
+    .fromGoogleIconBtn {
+      text-align: right;
+    }
+    .submitUrl {
+      text-align: right;
+    }
+  }
+}
+
+.userSettingModalOverlay {
+  z-index: 10000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, .8);
+}

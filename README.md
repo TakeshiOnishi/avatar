@@ -38,13 +38,9 @@ madge --exclude layout --image madge_graph.png src/pages/index.js
 
 ## TODO
 
-+ ユーザーの画像情報を登録
-  + realTimeDataBaseにすると量が増えるから設定系を別のパスにしたほうがいいかも
-  + 画像保存先が悩ましいけどbase64で保存するとかすれば楽かも
-+ ステータス
-  + マスター管理を FireStore? ...あるいはrealTimeDataBaseでroomを分ける (マスター管理)
-  + RTDなら`{uid: xxxxx, st_name: '離席', st_type: 1}` , `ラベルは自由でtypeで制限するとか
 + レイアウト(css)
++ FBのcreate, chatroomの共通化, 無茶苦茶なreactライフサイクル利用修正
++ DOMを無理やり取得してる箇所
 
 ## OTHER
 

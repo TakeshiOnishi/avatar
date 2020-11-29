@@ -22,6 +22,7 @@ const UserIcon = (props) => {
   const [updatedAt, setUpdatedAt] = useState(0)
   const [dragPxCount, setDragPxCount] = useState(0)
   const [chatMessageList, setChatMessageList] = useState([])
+  const [userIconStyle, setUserIconStyle] = useState({})
 
   const updateIconAttr = iconAttrObj => {
     setUpdatedAt(iconAttrObj.date)
@@ -42,6 +43,15 @@ const UserIcon = (props) => {
 
       database.ref(`${spaceName}/${userId}`).once('value', data => {
         updateIconAttr(data.val())
+      })
+
+    let userSettingSpaceName = 'user_setting' // TODO: この辺の変数名をglobal化
+      database.ref(`${userSettingSpaceName}/${userId}`).on('value', data => {
+        const fbVal = data.val()
+        if (fbVal === null) { return }
+        setUserIconStyle({
+          backgroundImage: `url(${fbVal.iconURL})`,
+        })
       })
 
       database.ref(`${spaceName}/${userId}`).on("child_changed", data => {
@@ -91,7 +101,7 @@ const UserIcon = (props) => {
 
   const handleDrag = (_ev, ui) => {
     setDragPxCount(dragPxCount + 1)
-    if (dragPxCount % 20 === 0) {
+    if (dragPxCount % 10 === 0) {
       setFirebaseDB(ui)
     }
   }
@@ -112,6 +122,11 @@ const UserIcon = (props) => {
   const handleAnimationEnd = ev => {
     ev.target.style.display = 'none'
   }
+  useEffect(
+    () => {
+      console.log(userIconStyle)
+    }, [userIconStyle]
+  )
 
   return(
     <>
@@ -127,9 +142,8 @@ const UserIcon = (props) => {
               onDrag={handleDrag}
               onStop={handleStop}
               >
-                <div data-id={userId} className={`userIcon  myUserIcon iconStatus${userStatusId}`}>
+                <div data-id={userId} className={`userIcon  myUserIcon iconStatus${userStatusId}`} style={userIconStyle}>
                   <p>{userName}</p>
-                  <p>({positionX}, {positionY})</p>
                   <p className='lastTime'>{updatedAt}</p>
                   <p>{statusIdToString(userStatusId)}</p>
                   <div className={`rangeSize${user.myRangeSelect}`} />
@@ -151,9 +165,8 @@ const UserIcon = (props) => {
               position={{x: positionX, y: positionY}}
               disabled={true}
             >
-              <div data-id={userId} className={`userIcon iconStatus${userStatusId}`}>
+              <div data-id={userId} className={`userIcon iconStatus${userStatusId}`} style={userIconStyle}>
                 <p>{userName}</p>
-                <p>({positionX}, {positionY})</p>
                 <p className='lastTime'>{updatedAt}</p>
                 <p>{statusIdToString(userStatusId)}</p>
                 {chatMessageList.map((chatMessage, index) => 

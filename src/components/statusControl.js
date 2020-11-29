@@ -6,7 +6,7 @@ import 'firebase/auth'
 import 'firebase/database'
 
 const StatusControl = () => {
-  const { myUserId, myUserName, setMyUserStatusId } = useContext(UserStateContext)
+  const { myUserId, myUserName, setMyUserStatusId, setMyUserIconUrl } = useContext(UserStateContext)
   let spaceName = 'user'
   let statusSpaceName = 'status'
   let database = firebase.database()
@@ -39,11 +39,20 @@ const StatusControl = () => {
 
   useEffect(
     () => {
+      if(myUserId === '') { return }
       firebase.database().ref(`${statusSpaceName}/${myUserId}`).once('value', data => {
         const fbVal = data.val()
         if(fbVal !== null && statusIdSelect) {
           statusIdSelect.value = fbVal.statusId
           setMyUserStatusId(fbVal.statusId)
+        }
+      })
+
+      let userSettingSpaceName = 'user_setting' // TODO: この辺の変数名をglobal化
+      firebase.database().ref(`${userSettingSpaceName}/${myUserId}`).once('value', data => {
+        const fbVal = data.val()
+        if(fbVal !== null) {
+          setMyUserIconUrl(fbVal.iconURL)
         }
       })
     }, [statusIdSelect, myUserId, setMyUserStatusId, statusSpaceName]

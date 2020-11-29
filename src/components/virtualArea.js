@@ -30,13 +30,6 @@ const VirtualArea = () => {
     }, [spaceName, database]
   )
 
-  // FIXME: for Debug
-  // useEffect(
-    // () => {
-      // console.log(userIdList)
-    // }, [userIdList]
-  // )
-
   return(
     <>
       <ChatBox userPositions={userPositions} />

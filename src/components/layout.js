@@ -42,6 +42,8 @@ const Layout = ({ children }) => {
   const [myUserId, setMyUserId] = useState('')
   const [myUserName, setMyUserName] = useState('')
   const [myUserStatusId, setMyUserStatusId] = useState(0)
+  const [myUserIconUrl, setMyUserIconUrl] = useState('')
+  const [googleIconUrl, setGoogleIconUrl] = useState('')
   const [myRangeSelect, setMyRangeSelect] = useState('M')
   const firebaseConfig = {
     apiKey: "AIzaSyCTPJpFP6vBuNhWwTDUZluq2zV-BatBtVU",
@@ -69,6 +71,7 @@ const Layout = ({ children }) => {
         if(user) {
           setMyUserId(user.uid)
           setMyUserName(user.displayName)
+          setGoogleIconUrl(user.photoURL)
         }
         else {
           if(window.location.pathname !== '/login/') {
@@ -85,6 +88,9 @@ const Layout = ({ children }) => {
     myUserName: myUserName,
     myUserStatusId: myUserStatusId,
     setMyUserStatusId: setMyUserStatusId,
+    myUserIconUrl: myUserIconUrl,
+    setMyUserIconUrl: setMyUserIconUrl,
+    googleIconUrl: googleIconUrl,
     myRangeSelect: myRangeSelect,
     setMyRangeSelect: setMyRangeSelect,
   }
