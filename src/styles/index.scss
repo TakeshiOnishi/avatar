@@ -70,6 +70,8 @@
     border: 2px solid #BB0;
     cursor: pointer;
   }
+  // HACK statusX系のクラス名と管理
+  .iconStatus0, .iconStatus1 { opacity: 0.25 }
 
   $sizeSmall: 50px;
   $sizeMedium: 200px;
@@ -106,15 +108,29 @@
   }
 }
 
-.joinRoomBtn, 
-.outRoomBtn {
-  margin: 10px;
-  padding: 5px 10px;
+.statusControl {
+  position: relative;
+  z-index: 999;
+  .myStatus {
+    .statusIdSelect {
+      padding: .5rem;
+      width: 25%;
+      margin-right: 5%;
+    }
+  }
+
+  .joinRoomBtn, 
+  .outRoomBtn {
+    margin: 10px;
+    padding: 5px 10px;
+  }
 }
 
 /*chatbox*/
 .chatBox {
   margin: 10px;
+  position: relative;
+  z-index: 999;
   .rangeSelect {
     padding: .5rem;
     width: 15%;

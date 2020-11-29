@@ -54,6 +54,7 @@ const ChatBox = props => {
 
     for (let [id, position] of Object.entries(userPositions)) {
       if( id === myUserId) { continue }
+      if([0, 1].includes(parseInt(position.statusId))) { continue } // HACK: 会話できないリストを管理
       let [positionCenterX, positionCenterY] = [
           position.x + userIconRadius,
           position.y + userIconRadius,
@@ -62,7 +63,7 @@ const ChatBox = props => {
       let diffY = (myPositionCenterY - positionCenterY) ** 2
       let diffR = (myIconRadius + userIconRadius) ** 2
       if(diffX + diffY <= diffR) {
-        // HACK: この辺の強引処理を変更
+        // HACK: この辺のDOM強引処理を変更
         if (typeof window !== "undefined") {
           document.querySelector(`[data-id="${id}"]`).classList.add('blink')
           setTimeout(() => {

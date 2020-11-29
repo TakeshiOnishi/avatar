@@ -4,6 +4,7 @@ import firebase from "firebase/app"
 import 'firebase/auth'
 import 'firebase/database'
 import "../styles/layout.scss"
+import { Helmet } from "react-helmet"
 
 if (typeof window !== "undefined") {
   var firebaseui = require('firebaseui');
@@ -21,12 +22,26 @@ export const rangeSizeMap = (sizeString) => {
   return rangePixel
 }
 
+// HACK: libにしたい & sizeをAPI化 & マスタ管理
+export const statusIdToString = (statusId) => {
+  let statusLabel
+  switch (parseInt(statusId)) {
+    case 0: statusLabel = '離席してます'; break
+    case 1: statusLabel = '集中してます'; break
+    case 2: statusLabel = '会話できます'; break
+    case 3: statusLabel = '会話に飢えてます'; break
+    default: console.log('invalid val'); break;
+  }
+  return statusLabel
+}
+
 
 export const UserStateContext = createContext()
 
 const Layout = ({ children }) => {
   const [myUserId, setMyUserId] = useState('')
   const [myUserName, setMyUserName] = useState('')
+  const [myUserStatusId, setMyUserStatusId] = useState(0)
   const [myRangeSelect, setMyRangeSelect] = useState('M')
   const firebaseConfig = {
     apiKey: "AIzaSyCTPJpFP6vBuNhWwTDUZluq2zV-BatBtVU",
@@ -68,12 +83,19 @@ const Layout = ({ children }) => {
   const userState = {
     myUserId: myUserId, 
     myUserName: myUserName,
+    myUserStatusId: myUserStatusId,
+    setMyUserStatusId: setMyUserStatusId,
     myRangeSelect: myRangeSelect,
-    setMyRangeSelect: setMyRangeSelect
+    setMyRangeSelect: setMyRangeSelect,
   }
 
   return (
     <>
+      <Helmet>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+        <title>AVATAR</title>
+      </Helmet>
       <UserStateContext.Provider value={userState}>
         <main>{children}</main>
       </UserStateContext.Provider>
