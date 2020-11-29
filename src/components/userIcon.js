@@ -122,11 +122,6 @@ const UserIcon = (props) => {
   const handleAnimationEnd = ev => {
     ev.target.style.display = 'none'
   }
-  useEffect(
-    () => {
-      console.log(userIconStyle)
-    }, [userIconStyle]
-  )
 
   return(
     <>
