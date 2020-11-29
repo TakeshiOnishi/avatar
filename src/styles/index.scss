@@ -70,6 +70,8 @@
     border: 2px solid #BB0;
     cursor: pointer;
   }
+  // HACK statusX系のクラス名と管理
+  .iconStatus0, .iconStatus1 { opacity: 0.25 }
 
   $sizeSmall: 50px;
   $sizeMedium: 200px;

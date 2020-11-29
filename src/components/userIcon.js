@@ -84,9 +84,9 @@ const UserIcon = (props) => {
     () => {
       if (userId === '') { return }
       setUserPositions(current => {
-        return {...current, [userId]: { x: positionX, y: positionY}}
+        return {...current, [userId]: { x: positionX, y: positionY, statusId: userStatusId}}
       })
-    }, [userId, positionX, positionY, setUserPositions]
+    }, [userId, userStatusId, positionX, positionY, setUserPositions]
   )
 
   const handleDrag = (_ev, ui) => {
@@ -127,7 +127,7 @@ const UserIcon = (props) => {
               onDrag={handleDrag}
               onStop={handleStop}
               >
-                <div data-id={userId} className='userIcon myUserIcon'>
+                <div data-id={userId} className={`userIcon  myUserIcon iconStatus${userStatusId}`}>
                   <p>{userName}</p>
                   <p>({positionX}, {positionY})</p>
                   <p className='lastTime'>{updatedAt}</p>
@@ -137,7 +137,7 @@ const UserIcon = (props) => {
                     <div key={index} className='chatMessage' onAnimationEnd={handleAnimationEnd}>
                       <div>
                         <p>
-                          {chatMessage}
+                          [{userName}] {chatMessage}
                         </p>
                       </div>
                     </div>
@@ -151,7 +151,7 @@ const UserIcon = (props) => {
               position={{x: positionX, y: positionY}}
               disabled={true}
             >
-              <div data-id={userId} className='userIcon'>
+              <div data-id={userId} className={`userIcon iconStatus${userStatusId}`}>
                 <p>{userName}</p>
                 <p>({positionX}, {positionY})</p>
                 <p className='lastTime'>{updatedAt}</p>
@@ -160,7 +160,7 @@ const UserIcon = (props) => {
                   <div key={index} className='chatMessage' onAnimationEnd={handleAnimationEnd}>
                     <div>
                       <p>
-                        {chatMessage}
+                        [{userName}] {chatMessage}
                       </p>
                     </div>
                   </div>
