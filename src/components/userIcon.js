@@ -51,6 +51,7 @@ const UserIcon = (props) => {
         if (fbVal === null) { return }
         setUserIconStyle({
           backgroundImage: `url(${fbVal.iconURL})`,
+          backgroundSize: 'contain'
         })
       })
 
