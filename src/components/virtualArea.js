@@ -1,33 +1,30 @@
-import React, { useState, useEffect } from "react"
-import firebase from "firebase/app"
-import 'firebase/auth'
-import 'firebase/database'
+import React, { useState, useEffect, useContext } from "react"
 import UserIcon from "./userIcon.js"
 import ChatBox from "../components/ChatBox"
+import { AppGlobalContext } from "../components/layout"
 
 const VirtualArea = () => {
-  let spaceName = 'user'
-  let database = firebase.database()
-
+  const { firebaseDB, spaceNameForUser } = useContext(AppGlobalContext)
   const [userIdList, setUserIdList] = useState([])
   const [userPositions, setUserPositions] = useState({})
 
-  database.ref(spaceName).on("child_removed", data => {
-    const fbVal = data.val();
-    setUserIdList(current => {
-      return current.filter(elm => {
-        return elm !== fbVal.id;
-      });
-    })
-  })
-
   useEffect(
     () => {
-      database.ref(spaceName).on("child_added", data => {
+      if(firebaseDB === undefined) { return }
+      firebaseDB.ref(spaceNameForUser).on("child_removed", data => {
+        const fbVal = data.val();
+        setUserIdList(current => {
+          return current.filter(elm => {
+            return elm !== fbVal.id
+          })
+        })
+      })
+
+      firebaseDB.ref(spaceNameForUser).on("child_added", data => {
         const fbVal = data.val();
         setUserIdList(current => [...current, fbVal.id])
       })
-    }, [spaceName, database]
+    }, [firebaseDB, spaceNameForUser]
   )
 
   return(

@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useContext } from "react"
-import { UserStateContext, statusIdToString } from "../components/layout"
+import { AppGlobalContext, statusIdToString } from "../components/layout"
 import Draggable from 'react-draggable'; // The default
 import firebase from "firebase/app"
 import dayjs from "dayjs"
 import 'firebase/auth'
 import 'firebase/database'
+import { toast } from 'react-toastify'
 
 const UserIcon = (props) => {
-  const { myUserId } = useContext(UserStateContext)
+  const { myUserId } = useContext(AppGlobalContext)
   const chatFreshnessSecond = -600
   let spaceName = 'user'
   let chatSpaceName = 'chat' // TODO: この辺の変数名をglobal化
@@ -77,6 +78,7 @@ const UserIcon = (props) => {
           if(fbVal.targetUserIds === undefined) { return }
           let messageToMe = fbVal.targetUserIds.includes(myUserId)
           if(messageToMe){
+            toast.info(`メッセージが届きました。`);
             setChatMessageList(current => 
               [...current, fbVal.message]
             )
@@ -128,7 +130,7 @@ const UserIcon = (props) => {
 
   return(
     <>
-      <UserStateContext.Consumer>
+      <AppGlobalContext.Consumer>
         {(user) => {
           // let isMe = true
           let isMe = (user.myUserId === userId)
@@ -144,7 +146,7 @@ const UserIcon = (props) => {
                   <p>{userName}</p>
                   <p className='lastTime'>{updatedAt}</p>
                   <p>{statusIdToString(userStatusId)}</p>
-                  <div className={`rangeSize${user.myRangeSelect}`} />
+                  <div className={`rangeSize${user.myRange}`} />
                   {chatMessageList.map((chatMessage, index) => 
                     <div key={index} className='chatMessage' onAnimationEnd={handleAnimationEnd}>
                       <div>
@@ -181,7 +183,7 @@ const UserIcon = (props) => {
             )
           }
         }}
-      </UserStateContext.Consumer>
+      </AppGlobalContext.Consumer>
     </>
   )
 }

@@ -1,19 +1,20 @@
 import React, { useState, useEffect, useContext } from "react"
-import { UserStateContext, statusIdToString } from "../components/layout"
+import { AppGlobalContext, statusIdToString } from "../components/layout"
 import dayjs from "dayjs"
 import firebase from "firebase/app"
 import 'firebase/auth'
 import 'firebase/database'
 import "../styles/layout.scss"
 import Modal from "react-modal"
+import { toast } from 'react-toastify'
 
 const UserSettingModal = props => {
   let database = firebase.database()
   Modal.setAppElement('body')
-  const { myUserId, myUserIconUrl, setMyUserIconUrl, googleIconUrl } = useContext(UserStateContext)
+  const { myUserId, myUserIconUrl, setMyUserIconUrl, myGoogleIconUrl } = useContext(AppGlobalContext)
 
   const handleClickFromGoogleIcon = ev => {
-    ev.target.parentNode.querySelector('.inputUrl').value = googleIconUrl
+    ev.target.parentNode.querySelector('.inputUrl').value = myGoogleIconUrl
   }
 
   const handleClickSubmitUrl = ev => {
@@ -25,6 +26,7 @@ const UserSettingModal = props => {
       date: dayjs().format('YYYY/MM/DD HH:mm:ss')
     })
     setMyUserIconUrl(inputUrlVal)
+    toast.success(`アイコンを設定しました。`);
   }
 
   return(

@@ -1,12 +1,13 @@
 import React, { useEffect, useContext } from "react"
-import { UserStateContext, statusIdToString } from "../components/layout"
+import { AppGlobalContext, statusIdToString } from "../components/layout"
 import dayjs from "dayjs"
 import firebase from "firebase/app"
 import 'firebase/auth'
 import 'firebase/database'
+import { toast } from 'react-toastify';
 
 const StatusControl = () => {
-  const { myUserId, myUserName, setMyUserStatusId, setMyUserIconUrl } = useContext(UserStateContext)
+  const { myUserId, myUserName, setMyUserStatusId, setMyUserIconUrl } = useContext(AppGlobalContext)
   let spaceName = 'user'
   let statusSpaceName = 'status'
   let database = firebase.database()
@@ -24,10 +25,12 @@ const StatusControl = () => {
       y: 0,
       date: dayjs().format('MM/DD HH:mm:ss')
     })
+    toast.success(`部屋に参加しました。`);
   }
 
   const outRoom = (myUserId) => {
     database.ref(`${spaceName}/${myUserId}`).remove()
+    toast.success(`部屋から退室しました。`);
   }
 
   const handleStatusChange = ev => {
@@ -35,6 +38,7 @@ const StatusControl = () => {
     database.ref(`${statusSpaceName}/${myUserId}`).set({
       statusId: statusId
     })
+    toast.success(`ステータスを更新しました。`);
   }
 
   useEffect(
@@ -60,13 +64,13 @@ const StatusControl = () => {
 
   return(
     <>
-      <UserStateContext.Consumer>
+      <AppGlobalContext.Consumer>
       {(user) => {
         return (
           <>
             <div className='statusControl'>
               <div className='myStatus'>
-                <select defaultValue='0' className="statusIdSelect" onBlur={handleStatusChange} onChange={handleStatusChange}>
+                <select defaultValue='0' className="statusIdSelect" onBlur={null} onChange={handleStatusChange}>
                   {[0,1,2,3].map(id => 
                     <option key={id} value={id}>{statusIdToString(id)}</option>
                   )}
@@ -84,7 +88,7 @@ const StatusControl = () => {
           </>
         )
       }}
-      </UserStateContext.Consumer>
+      </AppGlobalContext.Consumer>
     </>
   )
 }

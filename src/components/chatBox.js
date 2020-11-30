@@ -1,51 +1,38 @@
 import React, { useContext } from "react"
-import { UserStateContext, rangeSizeMap } from "../components/layout"
+import { AppGlobalContext, rangeSizeMap } from "../components/layout"
 import dayjs from "dayjs"
-import firebase from "firebase/app"
-import 'firebase/auth'
-import 'firebase/database'
-
-// HACK: querySelectorでDOMを強引に取得してる処理を修正
+import { toast } from 'react-toastify'
 
 const ChatBox = props => {
-  const { myUserId, myRangeSelect, setMyRangeSelect } = useContext(UserStateContext)
-  const maxTextLength = 80
-  let spaceName = 'chat'
+  const { 
+    myUserId, 
+    myRange,
+    setMyRange,
+    firebaseDB,
+    spaceNameForChat
+  } = useContext(AppGlobalContext)
+
   let userPositions = props.userPositions
-  let database = firebase.database()
-    // HACK: SSRでwindow無いエラーになるので一旦むりやり
-  let rangeSelect
-  let submitBtn
-  let textInput
-  let errElm
-  if (typeof window !== "undefined") {
-    rangeSelect = document.querySelector('.chatBox .rangeSelect')
-    submitBtn = document.querySelector('.chatBox .submit')
-    textInput = document.querySelector('.chatBox .textInput')
-    errElm = document.querySelector('.chatBox .err')
-  }
+  const maxTextLength = 80
 
-  const chatSend = () => {
+  const validChatText = textInput => {
     if(textInput.value.length >= maxTextLength) {
-      errElm.innerHTML = `${maxTextLength}文字を超えています。`
-      setTimeout(() => {
-        errElm.innerHTML = ''
-      }, 2000)
-      return
+      toast.error(`${maxTextLength}文字を超えています。`);
+      return false
     }else if(textInput.value.trim() === '') {
-      errElm.innerHTML = `文字を入力してください。`
-      setTimeout(() => {
-        errElm.innerHTML = ''
-      }, 2000)
-      return
+      toast.error(`文字を入力してください。`);
+      return false
+    }else{
+      return true
     }
+  }
+  //chatbox 途中 →  次はnerdの次
 
+  const chatSend = textInput => {
     let nearlyUserIds = []
     let userIconRadius
-    if (typeof window !== "undefined") {
-      userIconRadius = document.querySelector(`.userIcon`).clientWidth / 2
-    }
-    let myIconRadius = userIconRadius + rangeSizeMap(myRangeSelect)
+    if (typeof window !== "undefined") { userIconRadius = document.querySelector(`.userIcon`).clientWidth / 2 }
+    let myIconRadius = userIconRadius + rangeSizeMap(myRange)
     let [myPositionCenterX, myPositionCenterY] = 
       [
         userPositions[myUserId]['x'] + userIconRadius,
@@ -73,33 +60,40 @@ const ChatBox = props => {
         }
       }
     }
-    database.ref(`${spaceName}/${myUserId}`).set({
+    firebaseDB.ref(`${spaceNameForChat}/${myUserId}`).set({
       message: textInput.value,
       date: dayjs().format('YYYY/MM/DD HH:mm:ss'),
       targetUserIds: nearlyUserIds
     })
-
+    toast.success(`チャットを送信しました。`);
     textInput.value = ''
   }
 
-  const handleKeyUp = ev => {
-    if(ev.which === 13) {
-      submitBtn.click()
+  const enterCheck = ev => {
+    if(ev.which === 13 && validChatText(ev.target) === true) {
+      chatSend(ev.target)
     }
   }
 
-  const handleChange = () => setMyRangeSelect(rangeSelect.value)
+  const handleChange = ev => {
+    setMyRange(ev.target.value)
+  }
 
   return (
     <div className='chatBox'>
-      <select className='rangeSelect' onBlur={handleChange} onChange={handleChange} defaultValue={myRangeSelect} name='rangeSelect'>
+      <select className='rangeSelect' onBlur={handleChange} 
+        onChange={handleChange} defaultValue={myRange} 
+      >
         <option value='L'>大</option>
         <option value='M'>中</option>
         <option value='S'>小</option>
       </select>
-      <input type='text' className='textInput' onKeyPress={handleKeyUp} placeholder={`チャット内容 ${maxTextLength}文字まで`} />
-      <input type='button' className='submit' onClick={chatSend} value='送信' />
-      <p className='err'></p>
+
+      <input type='text' className='textInput' 
+        onKeyPress={enterCheck} 
+        placeholder={`チャット内容 ${maxTextLength}文字まで (ENTERで送信)`}
+      />
+
     </div>
   )
 }
