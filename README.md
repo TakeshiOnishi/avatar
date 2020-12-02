@@ -38,15 +38,9 @@ madge --exclude layout --image madge_graph.png src/pages/index.js
 
 ## TODO
 
-+ レイアウト(css)
-+ DOMを無理やり取得してる箇所
 + RTDBのuserを user_positionとして分割 / 転送量軽減
 
 ## OTHER
 
 + チャットはUserIdをkeyにしたObjectに格納してる
-  + ので、過去の分は保持ていない
-+ サイズ: 
-    + Small: 50px
-    + Medium: 200px
-    + Large: 400px
+  + ので、過去の分は保持していない
