@@ -4,6 +4,12 @@ import "../styles/layout.scss"
 import { Helmet } from "react-helmet"
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Push from "push.js"
+
+import Icon32 from "../images/favicon-32x32.jpg"
+import AppleTouchIcon from "../images/apple-touch-icon.jpg"
+import IconSquare from "../images/icon_small.jpg"
+import IconSquareGif from "../images/icon.gif"
 
 import { firebaseLogin, createFirebaseDatabase } from "../lib/firebase"
 
@@ -39,6 +45,7 @@ const Layout = ({ path, children }) => {
   // FirebaseSettng
   const [firebaseDB, setFirebaseDB] = useState()
   const [spaceNameForUser] = useState('user')
+  const [spaceNameForNotifyApproach] = useState('notify_approach')
   const [spaceNameForChat] = useState('chat')
   const [spaceNameForStatus] = useState('status')
   const [spaceNameForUserSetting] = useState('user_setting')
@@ -75,6 +82,7 @@ const Layout = ({ path, children }) => {
     myRange,
     setMyRange,
     spaceNameForUserSetting,
+    spaceNameForNotifyApproach,
   }
 
   const isLoginPage = () => {
@@ -85,11 +93,19 @@ const Layout = ({ path, children }) => {
     }
   }
 
+  if (typeof navigator !== "undefined") {
+    if(!Push.Permission.has()){
+      Push.Permission.request(() => { Push.create('通知許可されました!')})
+    }
+  }
+
   return (
     <>
       <Helmet>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+        <link rel="apple-touch-icon" sizes="180x180" href={AppleTouchIcon} />
+        <link rel="icon" type="image/png" sizes="32x32" href={Icon32} />
         <title>AVATAR</title>
       </Helmet>
       <AppGlobalContext.Provider value={appGlobalState}>

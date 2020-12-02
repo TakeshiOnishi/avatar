@@ -4,6 +4,8 @@ import { VirtualAreaContext } from "./virtualArea"
 import dayjs from "dayjs"
 import Draggable from 'react-draggable'
 import { toast } from 'react-toastify'
+import Push from "push.js"
+import IconSquare from "../images/icon_small.jpg"
 
 const UserIcon = (props) => {
   const { 
@@ -34,7 +36,7 @@ const UserIcon = (props) => {
     padding: `${userIconPadding}px`
   })
 
-  const chatFreshnessSecond = -600
+  const chatFreshnessSecond = -10
 
   const initUserIcon = () => {
     firebaseDB.ref(`${spaceNameForUser}/${userId}`).once('value', data => {
@@ -88,7 +90,15 @@ const UserIcon = (props) => {
         if(fbVal.targetUserIds === undefined) { return }
         let messageToMe = fbVal.targetUserIds.includes(myUserId)
         if(messageToMe){
-          toast.info(`メッセージが届きました。`);
+          Push.create(`${fbVal.name}さんからチャットが届きました`, {
+            body: fbVal.message,
+            icon: IconSquare,
+            onClick: ev => {
+              window.focus()
+              ev.currentTarget.close()
+            }
+          })
+
           setChatMessageList(current => 
             [...current, fbVal.message]
           )
