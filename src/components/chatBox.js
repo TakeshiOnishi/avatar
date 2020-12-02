@@ -7,6 +7,7 @@ import { toast } from 'react-toastify'
 const ChatBox = props => {
   const { 
     myUserId, 
+    myUserName,
     myRange,
     setMyRange,
     firebaseDB,
@@ -48,6 +49,7 @@ const ChatBox = props => {
     if(nearlyUserIds.length >= 1) {
       firebaseDB.ref(`${spaceNameForChat}/${myUserId}`).set({
         message: textInput.value,
+        name: myUserName,
         date: dayjs().format('YYYY/MM/DD HH:mm:ss'),
         targetUserIds: nearlyUserIds
       })
