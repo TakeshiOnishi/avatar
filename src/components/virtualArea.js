@@ -15,10 +15,10 @@ const VirtualArea = () => {
   useEffect(
     () => {
       firebaseDB.ref(spaceNameForUser).on("child_removed", data => {
-        const fbVal = data.val();
+        const fbKey = data.key
         setUserIdList(current => {
           return current.filter(elm => {
-            return elm !== fbVal.id
+            return elm !== fbKey
           })
         })
       })
