@@ -7,7 +7,7 @@ import UserSettingModal from "../components/userSettingModal"
 import "../styles/index.scss"
 
 const IndexPage = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   return(
     <Layout>

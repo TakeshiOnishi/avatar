@@ -35,12 +35,13 @@ export const statusIdToString = (statusId) => {
 
 export const AppGlobalContext = createContext()
 
-const Layout = ({ children }) => {
+const Layout = ({ path, children }) => {
   // FirebaseSettng
   const [firebaseDB, setFirebaseDB] = useState()
   const [spaceNameForUser] = useState('user')
   const [spaceNameForChat] = useState('chat')
   const [spaceNameForStatus] = useState('status')
+  const [spaceNameForUserSetting] = useState('user_setting')
 
   // myStatus
   const [myUserId, setMyUserId] = useState('')
@@ -73,6 +74,15 @@ const Layout = ({ children }) => {
     myGoogleIconUrl,
     myRange,
     setMyRange,
+    spaceNameForUserSetting,
+  }
+
+  const isLoginPage = () => {
+    if (typeof window !== "undefined") {
+      if(window.location.pathname === '/login/') { 
+        return true
+      }
+    }
   }
 
   return (
@@ -83,7 +93,11 @@ const Layout = ({ children }) => {
         <title>AVATAR</title>
       </Helmet>
       <AppGlobalContext.Provider value={appGlobalState}>
-        <main>{children}</main>
+        {isLoginPage() || firebaseDB !== undefined ? ( 
+          <main>{children}</main>
+        ) : (
+          <main></main>
+        ) }
       </AppGlobalContext.Provider>
       <ToastContainer autoClose={3000} />
     </>

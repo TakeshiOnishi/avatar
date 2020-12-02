@@ -1,33 +1,50 @@
-import React, { useState, useEffect, useContext } from "react"
-import { AppGlobalContext, statusIdToString } from "../components/layout"
-import dayjs from "dayjs"
-import firebase from "firebase/app"
-import 'firebase/auth'
-import 'firebase/database'
+import React, { useEffect, useContext, useRef } from "react"
+import { AppGlobalContext } from "./layout"
 import "../styles/layout.scss"
 import Modal from "react-modal"
 import { toast } from 'react-toastify'
 
 const UserSettingModal = props => {
-  let database = firebase.database()
   Modal.setAppElement('body')
-  const { myUserId, myUserIconUrl, setMyUserIconUrl, myGoogleIconUrl } = useContext(AppGlobalContext)
 
-  const handleClickFromGoogleIcon = ev => {
-    ev.target.parentNode.querySelector('.inputUrl').value = myGoogleIconUrl
+  let inputUrl = useRef()
+
+  const { 
+    myUserId, 
+    myUserIconUrl, 
+    setMyUserIconUrl, 
+    myGoogleIconUrl,
+    firebaseDB,
+    spaceNameForUserSetting,
+  } = useContext(AppGlobalContext)
+
+  const clickFromGoogleIcon = ev => {
+    inputUrl.current.value = myGoogleIconUrl
   }
 
-  const handleClickSubmitUrl = ev => {
-    let userSettingSpaceName = 'user_setting' // TODO: この辺の変数名をglobal化
+  const initIcon = () => {
+    firebaseDB.ref(`${spaceNameForUserSetting}/${myUserId}`).once('value', data => {
+      const fbVal = data.val()
+      if(fbVal !== null && inputUrl.current) {
+        inputUrl.current.value = fbVal.iconURL
+      }
+    })
+  }
 
-    let inputUrlVal = ev.target.parentNode.querySelector('.inputUrl').value
-    database.ref(`${userSettingSpaceName}/${myUserId}`).set({
+  const clickSubmitUrl = ev => {
+    let inputUrlVal = inputUrl.current.value
+    firebaseDB.ref(`${spaceNameForUserSetting}/${myUserId}`).set({
       iconURL: inputUrlVal,
-      date: dayjs().format('YYYY/MM/DD HH:mm:ss')
     })
     setMyUserIconUrl(inputUrlVal)
     toast.success(`アイコンを設定しました。`);
   }
+
+  useEffect(
+    () => {
+      initIcon()
+    }, []
+  )
 
   return(
     <Modal 
@@ -35,13 +52,25 @@ const UserSettingModal = props => {
        overlayClassName="userSettingModalOverlay"
        isOpen={props.isModalOpen}>
 
-      <button className='userSettingModalCloseBtn' onClick={() => props.setIsModalOpen(false)}>設定変更画面を閉じる</button>
+      <button className='userSettingModalCloseBtn' onClick={() => props.setIsModalOpen(false)}>
+        設定変更画面を閉じる
+      </button>
 
       <div className='iconUrl'>
         <h3>アイコン画像</h3>
-        <input type='text' className='inputUrl' placeholder='画像URLを入れてください。(https://xxxxxxx)' defaultValue={myUserIconUrl} />
-        <input type="button" onClick={handleClickFromGoogleIcon} className='fromGoogleIconBtn' value='Googleのユーザーアイコンを設定' />
-        <input type="button" onClick={handleClickSubmitUrl} className='submitUrl' value="submit" />
+
+        <input type='text' className='inputUrl' 
+          placeholder='画像URLを入れてください。(https://xxxxxxx)' 
+          defaultValue={myUserIconUrl}
+          ref={inputUrl}
+        />
+
+        <input type="button" onClick={clickFromGoogleIcon}
+          className='fromGoogleIconBtn'
+          value='Googleのユーザーアイコンを設定'
+        />
+
+        <input type="button" onClick={clickSubmitUrl} className='submitUrl' value="submit" />
       </div>
     </Modal>
   )
