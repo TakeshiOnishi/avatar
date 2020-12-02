@@ -128,7 +128,7 @@ const UserIcon = (props) => {
 
   const userIconOnDrag = (_ev, ui) => {
     setDragPxCount(dragPxCount + 1)
-    if (dragPxCount % 15 === 0) {
+    if (dragPxCount % 10 === 0) {
       updateFirebasePosition(ui)
     }
   }
