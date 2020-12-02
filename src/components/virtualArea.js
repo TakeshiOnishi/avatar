@@ -9,8 +9,7 @@ const VirtualArea = () => {
   const { firebaseDB, spaceNameForUser } = useContext(AppGlobalContext)
   const [userIdList, setUserIdList] = useState([])
   const [userPositions, setUserPositions] = useState({})
-  const [userIconWidth] = useState(120)
-  const [userIconPadding] = useState(10)
+  const [userIconWidth] = useState(55)
 
   useEffect(
     () => {
@@ -34,16 +33,20 @@ const VirtualArea = () => {
     userPositions,
     setUserPositions,
     userIconWidth,
-    userIconPadding
   }
 
   return(
     <>
       <VirtualAreaContext.Provider value={areaContextValue}>
-        <ChatBox />
-        <div className="virtualArea">
+        <div style={{
+          position: 'relative',
+          width: '100vw',
+          height: '100vh',
+          background: ' repeating-linear-gradient(0deg, #DDDBDB 0px, rgba(0,0,0,0) 1px, rgba(0,0,0,0) 100px), repeating-linear-gradient(90deg, #DDDBDB 0px, rgba(0,0,0,0) 1px, rgba(0,0,0,0) 100px) '
+        }}>
+          <ChatBox />
           {userIdList.map(userId => 
-            <UserIcon key={userId} id={userId}  />
+            <UserIcon key={userId} id={userId} />
           )}
         </div>
       </VirtualAreaContext.Provider>

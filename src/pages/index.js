@@ -3,6 +3,7 @@ import Layout from "../components/layout"
 import StatusControl from "../components/StatusControl"
 import VirtualArea from "../components/virtualArea"
 import UserSettingModal from "../components/userSettingModal"
+import Logo from "../components/logo"
 
 import "../styles/index.scss"
 
@@ -12,8 +13,8 @@ const IndexPage = () => {
   return(
     <Layout>
       <>
-        <button onClick={() => setIsModalOpen(true)} className='userSettingModalOpenBtn'>ユーザー設定変更</button>
-        <StatusControl />
+        <Logo />
+        <StatusControl isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
         <VirtualArea />
         <UserSettingModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
       </>

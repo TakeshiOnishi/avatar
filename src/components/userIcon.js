@@ -1,11 +1,15 @@
 import React, { useState, useEffect, useContext } from "react"
-import { AppGlobalContext, statusIdToString } from "./layout"
+import { AppGlobalContext, statusIdToString, statusIdToColorCode, statusIdToActive, rangeSizeTxtToPixel } from "./layout"
 import { VirtualAreaContext } from "./virtualArea"
 import dayjs from "dayjs"
 import Draggable from 'react-draggable'
 import { toast } from 'react-toastify'
 import Push from "push.js"
 import IconSquare from "../images/icon_small.jpg"
+
+import { Avatar, Badge } from '@material-ui/core'
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faCloudShowersHeavy } from "@fortawesome/free-solid-svg-icons"
 
 const UserIcon = (props) => {
   const { 
@@ -26,6 +30,7 @@ const UserIcon = (props) => {
   const [userId] = useState(props.id)
   const [userName, setUserName] = useState('')
   const [userStatusId, setUserStatusId] = useState(0)
+  const [userIconUrl, setUserIconUrl] = useState('')
   const [positionX, setPositionX] = useState(0)
   const [positionY, setPositionY] = useState(0)
   const [dragPxCount, setDragPxCount] = useState(0)
@@ -64,12 +69,7 @@ const UserIcon = (props) => {
     firebaseDB.ref(`${spaceNameForUserSetting}/${userId}`).on('value', data => {
       const fbVal = data.val()
       if (fbVal === null) { return }
-      setUserIconStyle(Object.assign(userIconStyle, {
-        backgroundImage: `url(${fbVal.iconURL})`,
-        backgroundSize: 'contain',
-        backgroundRepeat: 'no-repeat',
-        backgroundPosition: 'center center',
-      }))
+      setUserIconUrl(fbVal.iconURL)
     })
   }
 
@@ -160,23 +160,52 @@ const UserIcon = (props) => {
             onStop={userIconOnStop}
             disabled={isMe ? false : true}
             >
-              <div data-id={userId} 
-                className={`userIcon  ${isMe ? 'myUserIcon': 'userIcon'} iconStatus${userStatusId}`}
-                style={userIconStyle}
+              <Badge
+                overlap="circle"
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                badgeContent={<FontAwesomeIcon icon={faCloudShowersHeavy} style={{fontSize: '1.2rem'}} />}
+                style={{
+                  position: 'absolute',
+                  cursor: 'pointer',
+                }}
               >
-                <p>{userName}</p>
-                <p>{statusIdToString(userStatusId)}</p>
-                {chatMessageList.map((chatMessage, index) => 
-                  <div key={index} className='chatMessage' onAnimationEnd={messageAnimationEnd}>
-                    <div>
-                      <p>
-                        [{userName}] {chatMessage}
-                      </p>
-                    </div>
+                <div id={`userIcon-${userId}`}>
+                  <Avatar alt={userName} src={userIconUrl} style={{
+                      border: '5px double',
+                      boxSizing: 'border-box',
+                      borderColor: statusIdToColorCode(userStatusId),
+                      width: userIconWidth,
+                      height: userIconWidth,
+                      opacity: statusIdToActive(userStatusId) ? '0.25' : '1',
+                      pointerEvents: 'none',
+                    }} 
+                    className={userStatusId === 3 ? 'rainbowC' : '' }
+                  />
+                  {isMe && <div style={{
+                    boxSizing: 'border-box',
+                    position: 'absolute',
+                    content: '',
+                    width: userIconWidth + rangeSizeTxtToPixel(user.myRange),
+                    height: userIconWidth + rangeSizeTxtToPixel(user.myRange),
+                    top: rangeSizeTxtToPixel(user.myRange) / 2 * -1,
+                    left: rangeSizeTxtToPixel(user.myRange) / 2 * -1,
+                    border: '2px dotted #A69286',
+                    borderRadius: '50%',
+                  }} />}
+
+                  <div style={{position: 'absolute'}}>
+                    {chatMessageList.map((chatMessage, index) => 
+                      <div key={index} className='chatMessage' onAnimationEnd={messageAnimationEnd}>
+                        <p style={{fontSize: '0.5rem', color: '#777', margin: 0}}>{userName}</p>
+                        <p style={{margin:0}}>{chatMessage}</p>
+                      </div>
+                    )}
                   </div>
-                )}
-                {isMe && <div className={`rangeSize${user.myRange}`} />}
-              </div>
+                </div>
+              </Badge>
             </Draggable>
           )
         }}

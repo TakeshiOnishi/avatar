@@ -3,6 +3,9 @@ import { AppGlobalContext, rangeSizeMap } from "./layout"
 import { VirtualAreaContext } from "./virtualArea"
 import dayjs from "dayjs"
 import { toast } from 'react-toastify'
+import { Grid, TextField, Select, MenuItem } from '@material-ui/core'
+import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles'
+import { brown } from '@material-ui/core/colors'
 
 const ChatBox = props => {
   const { 
@@ -38,9 +41,9 @@ const ChatBox = props => {
       if(checkHit(myIconPositionInfo, getIconPositionInfo(position.x, position.y)) === true) {
         // HACK: この辺のDOM強引処理を変更
         if (typeof window !== "undefined") {
-          document.querySelector(`[data-id="${id}"]`).classList.add('blink')
+          document.querySelector(`#userIcon-${id}`).classList.add('blink')
           setTimeout(() => {
-            document.querySelector(`[data-id="${id}"]`).classList.remove('blink')
+            document.querySelector(`#userIcon-${id}`).classList.remove('blink')
           }, 2000)
           nearlyUserIds.push(id)
         }
@@ -93,18 +96,28 @@ const ChatBox = props => {
     setMyRange(ev.target.value)
   }
 
-  return (
-    <div className='chatBox'>
-      <select className='rangeSelect' onBlur={null} onChange={rangeSelectChange} defaultValue={myRange}>
-        <option value='L'>大</option>
-        <option value='M'>中</option>
-        <option value='S'>小</option>
-      </select>
+  const theme = createMuiTheme({
+    palette: {
+      primary: brown,
+    },
+  })
 
-      <input type='text' className='textInput' 
-        onKeyPress={enterCheck} 
-        placeholder={`チャット内容 ${maxTextLength}文字まで (ENTERで送信)`}
-      />
+  return (
+    <div className='chatBox' style={{position: 'absolute', bottom: '100px', right: '10px', width: '60%'}}>
+      <ThemeProvider theme={theme}>
+        <Grid container spacing={1} alignItems="flex-end">
+          <Grid item>
+            <Select value={myRange} onBlur={null} onChange={rangeSelectChange}>
+               <MenuItem key='l' value='L'>大</MenuItem>
+               <MenuItem key='m' value='M'>中</MenuItem>
+               <MenuItem key='s' value='S'>小</MenuItem>
+            </Select>
+          </Grid>
+          <Grid item style={{width: '90%'}}>
+            <TextField onKeyPress={enterCheck} label={`チャット内容 ${maxTextLength}文字まで (ENTERで送信)`} width="50" style={{width: '100%', background: '#FFF'}} />
+          </Grid>
+        </Grid>
+      </ThemeProvider>
     </div>
   )
 }

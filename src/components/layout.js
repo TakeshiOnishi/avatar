@@ -37,6 +37,34 @@ export const statusIdToString = (statusId) => {
   }
   return statusLabel
 }
+export const statusIdToColorCode = (statusId) => {
+  let statusLabel
+  switch (parseInt(statusId)) {
+    case 0: statusLabel = '#44A68F'; break
+    case 1: statusLabel = '#B36470'; break
+    case 2: statusLabel = '#5D69A6'; break
+    case 3: statusLabel = 'linear-gradient(to right, red, orange, yellow, green, aqua, blue, purple)'; break
+    default: console.log('invalid val'); break;
+  }
+  return statusLabel
+}
+export const statusIdToActive = (statusId) => {
+  if([0, 1].includes(parseInt(statusId))){
+    return true
+  }else{
+    return false
+  }
+}
+export const rangeSizeTxtToPixel = (rangeSizeTxt) => {
+  let pixel
+  switch (rangeSizeTxt) {
+    case 'S': pixel = 50; break
+    case 'M': pixel = 200; break
+    case 'L': pixel = 400; break
+    default: console.log('invalid val'); break;
+  }
+  return pixel
+}
 
 
 export const AppGlobalContext = createContext()
@@ -115,7 +143,7 @@ const Layout = ({ path, children }) => {
           <main></main>
         ) }
       </AppGlobalContext.Provider>
-      <ToastContainer autoClose={3000} />
+      <ToastContainer autoClose={3000} position='bottom-left' pauseOnFocusLoss={false} />
     </>
   )
 }

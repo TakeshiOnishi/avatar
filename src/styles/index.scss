@@ -1,151 +1,66 @@
-.virtualArea{
-  position: relative;
-  width: 100%;
-  height: 600px;
-  background: #CCC;
+$layer1zIndex: 11;
+$layer2zIndex: 12;
+$layer3zIndex: 13;
+$layer4zIndex: 13;
 
-  .userIcon {
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 50%;
-    text-align: center;
-    background: #EEE;
-    font-size: 0.9rem;
-    font-weight: bold;
-    color: #222;
-    p {
-      margin: 0px;
-      padding: 0px;
-      &.lastTime {
-        font-size: .5rem;
-        font-weight: normal;
-      }
-    }
-    @keyframes flash {
-      0%,100% { opacity: 1; }
-      50% { opacity: 0.6; }
-    }
-    &.blink {
-      animation: flash 0.8s linear infinite;
-      background: #66CCFF;
-    }
-    @keyframes fadeO {
-      /* FIXME: CSSは仮 */
-      0% { opacity: 1; }
-      70% { opacity: 1; }
-      100% { opacity: 0; }
-    }
-    .chatMessage {
-      /* FIXME: CSSは仮 */
-      animation: fadeO 3s linear 0s;
-      animation-fill-mode: forwards;
-      position: relative;
-      display: inline-block;
-      margin: 1.5em 0;
-      padding: 7px 10px;
-      min-width: 120px;
-      max-width: 100%;
-      color: #555;
-      font-size: 16px;
-      background: #e0edff;
-      z-index: 999;
-      &::before {
-        content: "";
-        position: absolute;
-        top: -30px;
-        left: 50%;
-        margin-left: -15px;
-        border: 15px solid transparent;
-        border-bottom: 15px solid #e0edff;
-      }
-      p {
-        margin: 0;
-        padding: 0;
-      }
-    }
-  }
-  .myUserIcon {
-    border: 2px solid #BB0;
-    cursor: pointer;
-  }
-  // HACK statusX系のクラス名と管理
-  .iconStatus0, .iconStatus1 { opacity: 0.25 }
-
-  $sizeSmall: 50px;
-  $sizeMedium: 200px;
-  $sizeLarge: 400px;
-  .rangeSizeS {
-    box-sizing: border-box;
-    position: absolute;
-    content: '';
-    width: calc(100% + #{$sizeSmall});
-    height: calc(100% + #{$sizeSmall});
-    top: calc(#{$sizeSmall} / 2 * -1);
-    left: calc(#{$sizeSmall} / 2 * -1);
-    border: 2px dotted #F00;
-    border-radius: 50%
-  }
-  .rangeSizeM {
-    box-sizing: border-box;
-    position: absolute;
-    content: '';
-    width: calc(100% + #{$sizeMedium});
-    height: calc(100% + #{$sizeMedium});
-    top: calc(#{$sizeMedium} / 2 * -1);
-    left: calc(#{$sizeMedium} / 2 * -1);
-    border: 2px dotted #F00;
-    border-radius: 50%
-  }
-  .rangeSizeL {
-    box-sizing: border-box;
-    position: absolute;
-    content: '';
-    width: calc(100% + #{$sizeLarge});
-    height: calc(100% + #{$sizeLarge});
-    top: calc(#{$sizeLarge} / 2 * -1);
-    left: calc(#{$sizeLarge} / 2 * -1);
-    border: 2px dotted #F00;
-    border-radius: 50%
-  }
+.logo {
+  z-index: $layer3zIndex;
 }
-
 .statusControl {
+  z-index: $layer2zIndex;
+}
+@keyframes flash {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+.blink {
+  animation: flash 0.8s linear infinite;
+}
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  70% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.chatMessage {
+  animation: fadeOut 5s linear 0s;
+  animation-fill-mode: forwards;
   position: relative;
-  z-index: 999;
-  .myStatus {
-    .statusIdSelect {
-      padding: .5rem;
-      width: 25%;
-      margin-right: 5%;
-    }
-  }
-
-  .joinRoomBtn, 
-  .outRoomBtn {
-    margin: 10px;
-    padding: 5px 10px;
+  display: inline-block;
+  margin: 0.3rem 0;
+  padding: 0.3rem;
+  min-width: 120px;
+  background: #DDDBDB;
+  z-index: $layer1zIndex;
+  &::before {
+    content: "";
+    position: absolute;
+    top: -25px;
+    left: 0;
+    margin-left: 5px;
+    border: 15px solid transparent;
+    border-bottom: 20px solid #DDDBDB;
   }
 }
 
-/*chatbox*/
 .chatBox {
-  margin: 10px;
-  position: relative;
-  z-index: 999;
-  .rangeSelect {
-    padding: .5rem;
-    width: 15%;
-  }
-  .textInput {
-    margin: 0 5%;
-    padding: .5rem;
-    width: 50%;
-  }
-  .submit {
-    padding: .5rem;
-    width: 10%;
-  }
+  z-index: $layer2zIndex;
 }
+
+// ネタ
+.rainbowC {
+ animation: rainbow 5s infinite alternate;
+}
+@keyframes rainbow {
+  0% {border-color: hsl(0, 100%, 50%);}
+  14% {border-color: hsl(30,100%,50%);}
+  28% {border-color: hsl(60,100%,50%);}
+  42% {border-color: hsl(120,100%,50%);}
+  56% {border-color:  hsl(240,100%,50%);}
+  70% {border-color: hsl(280,100%,50%);}
+  84% {border-color: hsl(320,100%,50%);}
+  100% {border-color: hsl(255, 100%, 50%);}
+}
+
 
 /* modal */
 .userSettingModalOpenBtn {
@@ -181,7 +96,7 @@
 }
 
 .userSettingModalOverlay {
-  z-index: 10000;
+  z-index: $layer4zIndex;
   position: fixed;
   top: 0;
   left: 0;
