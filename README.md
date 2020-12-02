@@ -39,8 +39,8 @@ madge --exclude layout --image madge_graph.png src/pages/index.js
 ## TODO
 
 + レイアウト(css)
-+ FBのcreate, chatroomの共通化, 無茶苦茶なreactライフサイクル利用修正
 + DOMを無理やり取得してる箇所
++ RTDBのuserを user_positionとして分割 / 転送量軽減
 
 ## OTHER
 

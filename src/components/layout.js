@@ -1,14 +1,11 @@
 import React, { useState, createContext } from "react"
 import PropTypes from "prop-types"
-import firebase from "firebase/app"
-import 'firebase/auth'
-import 'firebase/database'
 import "../styles/layout.scss"
 import { Helmet } from "react-helmet"
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-if (typeof window !== "undefined") {
-  var firebaseui = require('firebaseui');
-}
+import { firebaseLogin, createFirebaseDatabase } from "../lib/firebase"
 
 // HACK: libにしたい & sizeをAPI化
 export const rangeSizeMap = (sizeString) => {
@@ -36,63 +33,56 @@ export const statusIdToString = (statusId) => {
 }
 
 
-export const UserStateContext = createContext()
+export const AppGlobalContext = createContext()
 
-const Layout = ({ children }) => {
+const Layout = ({ path, children }) => {
+  // FirebaseSettng
+  const [firebaseDB, setFirebaseDB] = useState()
+  const [spaceNameForUser] = useState('user')
+  const [spaceNameForChat] = useState('chat')
+  const [spaceNameForStatus] = useState('status')
+  const [spaceNameForUserSetting] = useState('user_setting')
+
+  // myStatus
   const [myUserId, setMyUserId] = useState('')
   const [myUserName, setMyUserName] = useState('')
   const [myUserStatusId, setMyUserStatusId] = useState(0)
   const [myUserIconUrl, setMyUserIconUrl] = useState('')
-  const [googleIconUrl, setGoogleIconUrl] = useState('')
-  const [myRangeSelect, setMyRangeSelect] = useState('M')
-  const firebaseConfig = {
-    apiKey: "AIzaSyCTPJpFP6vBuNhWwTDUZluq2zV-BatBtVU",
-    authDomain: "multi-connect-f53ad.firebaseapp.com",
-    databaseURL: "https://multi-connect-f53ad.firebaseio.com",
-    projectId: "multi-connect-f53ad",
-    storageBucket: "multi-connect-f53ad.appspot.com",
-    messagingSenderId: "670019221729",
-    appId: "1:670019221729:web:7ec5b662caacb81bcf5fa0",
-    measurementId: "G-L7TTT4KBVC"
-  };
+  const [myRange, setMyRange] = useState('M')
+  const [myGoogleIconUrl, setMyGoogleIconUrl] = useState('')
 
-  const uiConfig = {
-    signInSuccessUrl: '/',
-    signInOptions: [ firebase.auth.GoogleAuthProvider.PROVIDER_ID ]
-  }
-
-  if (firebase.apps.length === 0) {
-    firebase.initializeApp(firebaseConfig);
-
-    // HACK: SSRでwindow無いエラーになるので一旦むりやり
-    if (typeof window !== "undefined") {
-      let ui = new firebaseui.auth.AuthUI(firebase.auth())
-      firebase.auth().onAuthStateChanged( (user) => {
-        if(user) {
-          setMyUserId(user.uid)
-          setMyUserName(user.displayName)
-          setGoogleIconUrl(user.photoURL)
-        }
-        else {
-          if(window.location.pathname !== '/login/') {
-            window.location.replace(`/login/`)
-          }
-          ui.start('.js-firebaseAuth', uiConfig);
-        }
-      });
+  firebaseLogin().then(res =>{
+    if(res !== null){
+      setMyUserId(res.uid)
+      setMyUserName(res.displayName)
+      setMyGoogleIconUrl(res.photoURL)
+      setFirebaseDB(createFirebaseDatabase())
     }
+  })
+
+  const appGlobalState = {
+    firebaseDB, 
+    spaceNameForUser, 
+    spaceNameForChat, 
+    spaceNameForStatus, 
+    myUserId, 
+    myUserName,
+    myUserStatusId,
+    setMyUserStatusId,
+    myUserIconUrl,
+    setMyUserIconUrl,
+    myGoogleIconUrl,
+    myRange,
+    setMyRange,
+    spaceNameForUserSetting,
   }
 
-  const userState = {
-    myUserId: myUserId, 
-    myUserName: myUserName,
-    myUserStatusId: myUserStatusId,
-    setMyUserStatusId: setMyUserStatusId,
-    myUserIconUrl: myUserIconUrl,
-    setMyUserIconUrl: setMyUserIconUrl,
-    googleIconUrl: googleIconUrl,
-    myRangeSelect: myRangeSelect,
-    setMyRangeSelect: setMyRangeSelect,
+  const isLoginPage = () => {
+    if (typeof window !== "undefined") {
+      if(window.location.pathname === '/login/') { 
+        return true
+      }
+    }
   }
 
   return (
@@ -102,9 +92,14 @@ const Layout = ({ children }) => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
         <title>AVATAR</title>
       </Helmet>
-      <UserStateContext.Provider value={userState}>
-        <main>{children}</main>
-      </UserStateContext.Provider>
+      <AppGlobalContext.Provider value={appGlobalState}>
+        {isLoginPage() || firebaseDB !== undefined ? ( 
+          <main>{children}</main>
+        ) : (
+          <main></main>
+        ) }
+      </AppGlobalContext.Provider>
+      <ToastContainer autoClose={3000} />
     </>
   )
 }

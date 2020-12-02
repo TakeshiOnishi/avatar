@@ -1,174 +1,163 @@
 import React, { useState, useEffect, useContext } from "react"
-import { UserStateContext, statusIdToString } from "../components/layout"
-import Draggable from 'react-draggable'; // The default
-import firebase from "firebase/app"
+import { AppGlobalContext, statusIdToString } from "./layout"
+import { VirtualAreaContext } from "./virtualArea"
 import dayjs from "dayjs"
-import 'firebase/auth'
-import 'firebase/database'
+import Draggable from 'react-draggable'
+import { toast } from 'react-toastify'
 
 const UserIcon = (props) => {
-  const { myUserId } = useContext(UserStateContext)
-  const chatFreshnessSecond = -600
-  let spaceName = 'user'
-  let chatSpaceName = 'chat' // TODO: この辺の変数名をglobal化
-  let statusSpaceName = 'status' // TODO: この辺の変数名をglobal化
-  let database = firebase.database()
-  const setUserPositions = props.setUserPositions
-  const [userId, setUserId] = useState('')
+  const { 
+    myUserId, 
+    firebaseDB,
+    spaceNameForUser,
+    spaceNameForChat,
+    spaceNameForStatus,
+    spaceNameForUserSetting,
+  } = useContext(AppGlobalContext)
+  const { 
+    userIconWidth, 
+    userIconPadding,
+    setUserPositions,
+  } = useContext(VirtualAreaContext)
+
+  const [isMe, setIsMe] = useState(false)
+  const [userId] = useState(props.id)
   const [userName, setUserName] = useState('')
   const [userStatusId, setUserStatusId] = useState(0)
   const [positionX, setPositionX] = useState(0)
   const [positionY, setPositionY] = useState(0)
-  const [updatedAt, setUpdatedAt] = useState(0)
   const [dragPxCount, setDragPxCount] = useState(0)
   const [chatMessageList, setChatMessageList] = useState([])
-  const [userIconStyle, setUserIconStyle] = useState({})
+  const [userIconStyle, setUserIconStyle] = useState({
+    width: `${userIconWidth}px`,
+    height: `${userIconWidth}px`,
+    padding: `${userIconPadding}px`
+  })
 
-  const updateIconAttr = iconAttrObj => {
-    setUpdatedAt(iconAttrObj.date)
-    setUserName(iconAttrObj.name)
-    setPositionX(iconAttrObj.x)
-    setPositionY(iconAttrObj.y)
+  const chatFreshnessSecond = -600
+
+  const initUserIcon = () => {
+    firebaseDB.ref(`${spaceNameForUser}/${userId}`).once('value', data => {
+      const fbVal = data.val()
+      setUserName(fbVal.name)
+      setPositionX(fbVal.x)
+      setPositionY(fbVal.y)
+    })
+  }
+
+  const receiveUserIconPositionChange = () => {
+    firebaseDB.ref(`${spaceNameForUser}/${userId}`).on("child_changed", data => {
+      const fbKey = data.key
+      const fbVal = data.val()
+      switch (fbKey) {
+        case 'name': setUserName(fbVal); break
+        case 'x': setPositionX(fbVal); break
+        case 'y': setPositionY(fbVal); break
+        default: console.log('invalid key'); break;
+      }
+    })
+  }
+
+  const receiveUserIconImageChange = () => {
+    firebaseDB.ref(`${spaceNameForUserSetting}/${userId}`).on('value', data => {
+      const fbVal = data.val()
+      if (fbVal === null) { return }
+      setUserIconStyle(Object.assign(userIconStyle, {
+        backgroundImage: `url(${fbVal.iconURL})`,
+        backgroundSize: 'contain',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center center',
+      }))
+    })
+  }
+
+  const receiveUserIconStatus = () => {
+    firebaseDB.ref(`${spaceNameForStatus}/${userId}`).on('value', data => {
+      const fbVal = data.val()
+      if (fbVal === null) { return }
+      setUserStatusId(fbVal.statusId)
+    })
+  }
+
+  const receiveMessage = () => {
+    firebaseDB.ref(`${spaceNameForChat}/${userId}`).on('value', data => {
+      const fbVal = data.val()
+      if (fbVal === null) { return }
+      let secondDiff = dayjs(fbVal.date).diff(dayjs(), 'second')
+      if(secondDiff >= chatFreshnessSecond){
+        if(fbVal.targetUserIds === undefined) { return }
+        let messageToMe = fbVal.targetUserIds.includes(myUserId)
+        if(messageToMe){
+          toast.info(`メッセージが届きました。`);
+          setChatMessageList(current => 
+            [...current, fbVal.message]
+          )
+        }
+      }
+    })
   }
 
   useEffect(
     () => {
-      setUserId(props.id)
-    }, [props.id]
+      setIsMe(myUserId === userId)
+      initUserIcon()
+      receiveUserIconPositionChange()
+      receiveUserIconImageChange()
+      receiveUserIconStatus()
+      receiveMessage()
+    }, [ userId ]
   )
 
   useEffect(
     () => {
-      if (userId === '') { return }
-
-      database.ref(`${spaceName}/${userId}`).once('value', data => {
-        updateIconAttr(data.val())
-      })
-
-    let userSettingSpaceName = 'user_setting' // TODO: この辺の変数名をglobal化
-      database.ref(`${userSettingSpaceName}/${userId}`).on('value', data => {
-        const fbVal = data.val()
-        if (fbVal === null) { return }
-        setUserIconStyle({
-          backgroundImage: `url(${fbVal.iconURL})`,
-          backgroundSize: 'contain',
-          backgroundRepeat: 'no-repeat',
-          backgroundPosition: 'center center',
-        })
-      })
-
-      database.ref(`${spaceName}/${userId}`).on("child_changed", data => {
-        const fbKey = data.key
-        const fbVal = data.val()
-        switch (fbKey) {
-          case 'date': setUpdatedAt(fbVal); break
-          case 'name': setUserName(fbVal); break
-          case 'x': setPositionX(fbVal); break
-          case 'y': setPositionY(fbVal); break
-          default: console.log('invalid key'); break;
-        }
-      })
-
-      database.ref(`${chatSpaceName}/${userId}`).on('value', data => {
-        const fbVal = data.val()
-        if (fbVal === null) { return }
-        let secondDiff = dayjs(fbVal.date).diff(dayjs(), 'second')
-        if(secondDiff >= chatFreshnessSecond){
-          if(fbVal.targetUserIds === undefined) { return }
-          let messageToMe = fbVal.targetUserIds.includes(myUserId)
-          if(messageToMe){
-            setChatMessageList(current => 
-              [...current, fbVal.message]
-            )
-          }
-        }
-      })
-
-      database.ref(`${statusSpaceName}/${userId}`).on('value', data => {
-        const fbVal = data.val()
-        if (fbVal === null) { return }
-        setUserStatusId(fbVal.statusId)
-      })
-
-    }, [userId, myUserId, chatFreshnessSecond, spaceName, chatSpaceName, statusSpaceName, database]
-  )
-
-  useEffect(
-    () => {
-      if (userId === '') { return }
       setUserPositions(current => {
         return {...current, [userId]: { x: positionX, y: positionY, statusId: userStatusId}}
       })
     }, [userId, userStatusId, positionX, positionY, setUserPositions]
   )
 
-  const handleDrag = (_ev, ui) => {
+  const userIconOnDrag = (_ev, ui) => {
     setDragPxCount(dragPxCount + 1)
     if (dragPxCount % 15 === 0) {
-      setFirebaseDB(ui)
+      updateFirebasePosition(ui)
     }
   }
-  const handleStop = (_ev, ui) => {
-    setFirebaseDB(ui)
+  const userIconOnStop = (_ev, ui) => {
+    updateFirebasePosition(ui)
   }
 
-  const setFirebaseDB = (ui) => {
-    database.ref(`${spaceName}/${userId}`).set({
-      id: userId,
+  const updateFirebasePosition = (ui) => {
+    firebaseDB.ref(`${spaceNameForUser}/${userId}`).set({
       name: userName,
       x: ui.x,
       y: ui.y,
-      date: dayjs().format('YYYY/MM/DD HH:mm:ss')
     })
   }
 
-  const handleAnimationEnd = ev => {
+  const messageAnimationEnd = ev => {
     ev.target.style.display = 'none'
   }
 
   return(
     <>
-      <UserStateContext.Consumer>
+      <AppGlobalContext.Consumer>
         {(user) => {
-          // let isMe = true
-          let isMe = (user.myUserId === userId)
-          if(isMe){
-            return (
-              <Draggable 
-              bounds="parent"
-              position={{x: positionX, y: positionY}}
-              onDrag={handleDrag}
-              onStop={handleStop}
-              >
-                <div data-id={userId} className={`userIcon  myUserIcon iconStatus${userStatusId}`} style={userIconStyle}>
-                  <p>{userName}</p>
-                  <p className='lastTime'>{updatedAt}</p>
-                  <p>{statusIdToString(userStatusId)}</p>
-                  <div className={`rangeSize${user.myRangeSelect}`} />
-                  {chatMessageList.map((chatMessage, index) => 
-                    <div key={index} className='chatMessage' onAnimationEnd={handleAnimationEnd}>
-                      <div>
-                        <p>
-                          [{userName}] {chatMessage}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </Draggable>
-            )
-          }else{
-            return (
+          return (
             <Draggable 
-              position={{x: positionX, y: positionY}}
-              disabled={true}
+            bounds="parent"
+            position={{x: positionX, y: positionY}}
+            onDrag={userIconOnDrag}
+            onStop={userIconOnStop}
+            disabled={isMe ? false : true}
             >
-              <div data-id={userId} className={`userIcon iconStatus${userStatusId}`} style={userIconStyle}>
+              <div data-id={userId} 
+                className={`userIcon  ${isMe ? 'myUserIcon': 'userIcon'} iconStatus${userStatusId}`}
+                style={userIconStyle}
+              >
                 <p>{userName}</p>
-                <p className='lastTime'>{updatedAt}</p>
                 <p>{statusIdToString(userStatusId)}</p>
                 {chatMessageList.map((chatMessage, index) => 
-                  <div key={index} className='chatMessage' onAnimationEnd={handleAnimationEnd}>
+                  <div key={index} className='chatMessage' onAnimationEnd={messageAnimationEnd}>
                     <div>
                       <p>
                         [{userName}] {chatMessage}
@@ -176,12 +165,12 @@ const UserIcon = (props) => {
                     </div>
                   </div>
                 )}
+                {isMe && <div className={`rangeSize${user.myRange}`} />}
               </div>
             </Draggable>
-            )
-          }
+          )
         }}
-      </UserStateContext.Consumer>
+      </AppGlobalContext.Consumer>
     </>
   )
 }

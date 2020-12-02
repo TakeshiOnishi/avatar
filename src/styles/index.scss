@@ -6,9 +6,7 @@
 
   .userIcon {
     position: absolute;
-    width: 100px;
-    height: 100px;
-    padding: 10px;
+    box-sizing: border-box;
     border-radius: 50%;
     text-align: center;
     background: #EEE;
@@ -77,6 +75,7 @@
   $sizeMedium: 200px;
   $sizeLarge: 400px;
   .rangeSizeS {
+    box-sizing: border-box;
     position: absolute;
     content: '';
     width: calc(100% + #{$sizeSmall});
@@ -87,6 +86,7 @@
     border-radius: 50%
   }
   .rangeSizeM {
+    box-sizing: border-box;
     position: absolute;
     content: '';
     width: calc(100% + #{$sizeMedium});
@@ -97,6 +97,7 @@
     border-radius: 50%
   }
   .rangeSizeL {
+    box-sizing: border-box;
     position: absolute;
     content: '';
     width: calc(100% + #{$sizeLarge});
