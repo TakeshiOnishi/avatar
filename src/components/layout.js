@@ -93,8 +93,10 @@ const Layout = ({ path, children }) => {
     }
   }
 
-  if(!Push.Permission.has()){
-    Push.Permission.request(() => { Push.create('通知許可されました!')})
+  if (typeof navigator !== "undefined") {
+    if(!Push.Permission.has()){
+      Push.Permission.request(() => { Push.create('通知許可されました!')})
+    }
   }
 
   return (
