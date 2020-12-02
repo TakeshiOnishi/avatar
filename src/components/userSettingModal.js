@@ -2,7 +2,12 @@ import React, { useEffect, useContext, useRef } from "react"
 import { AppGlobalContext } from "./layout"
 import "../styles/layout.scss"
 import Modal from "react-modal"
+import { Grid, Button, TextField } from '@material-ui/core'
 import { toast } from 'react-toastify'
+import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles'
+import { brown } from '@material-ui/core/colors'
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faTimes } from "@fortawesome/free-solid-svg-icons"
 
 const UserSettingModal = props => {
   Modal.setAppElement('body')
@@ -19,7 +24,7 @@ const UserSettingModal = props => {
   } = useContext(AppGlobalContext)
 
   const clickFromGoogleIcon = ev => {
-    inputUrl.current.value = myGoogleIconUrl
+    inputUrl.current.querySelector('input').value = myGoogleIconUrl
   }
 
   const initIcon = () => {
@@ -32,13 +37,19 @@ const UserSettingModal = props => {
   }
 
   const clickSubmitUrl = ev => {
-    let inputUrlVal = inputUrl.current.value
+    let inputUrlVal = inputUrl.current.querySelector('input').value
     firebaseDB.ref(`${spaceNameForUserSetting}/${myUserId}`).set({
       iconURL: inputUrlVal,
     })
     setMyUserIconUrl(inputUrlVal)
     toast.success(`アイコンを設定しました。`);
   }
+
+  const theme = createMuiTheme({
+    palette: {
+      primary: brown,
+    },
+  })
 
   useEffect(
     () => {
@@ -48,30 +59,30 @@ const UserSettingModal = props => {
 
   return(
     <Modal 
-       className="userSettingModal"
-       overlayClassName="userSettingModalOverlay"
-       isOpen={props.isModalOpen}>
+      className="userSettingModal"
+      overlayClassName="userSettingModalOverlay"
+      isOpen={props.isModalOpen}
+    >
+      <ThemeProvider theme={theme}>
+        <FontAwesomeIcon icon={faTimes} style={{fontSize: '1.2rem', position: 'absolute', right: '50px', top: '50px'}} onClick={() => props.setIsModalOpen(false)} />
 
-      <button className='userSettingModalCloseBtn' onClick={() => props.setIsModalOpen(false)}>
-        設定変更画面を閉じる
-      </button>
-
-      <div className='iconUrl'>
-        <h3>アイコン画像</h3>
-
-        <input type='text' className='inputUrl' 
-          placeholder='画像URLを入れてください。(https://xxxxxxx)' 
+        <h4 style={{textAlign: 'center'}}>プロフィール画像を設定する</h4>
+        <TextField label='画像URLを入れてください。(https://xxxxxxx)' 
           defaultValue={myUserIconUrl}
           ref={inputUrl}
+          style={{width: '100%'}}
         />
 
-        <input type="button" onClick={clickFromGoogleIcon}
-          className='fromGoogleIconBtn'
-          value='Googleのユーザーアイコンを設定'
-        />
+        <Grid container spacing={1} alignItems="flex-end" style={{marginTop: '20px'}}>
+          <Grid item>
+            <Button variant="contained" style={{marginRight: '5px'}} onClick={clickFromGoogleIcon}>Googleのユーザーアイコンを設定</Button>
+          </Grid>
 
-        <input type="button" onClick={clickSubmitUrl} className='submitUrl' value="submit" />
-      </div>
+          <Grid item>
+            <Button variant="contained" color="primary" onClick={clickSubmitUrl}>画像URLをアイコンとして登録する</Button>
+          </Grid>
+        </Grid>
+      </ThemeProvider>
     </Modal>
   )
 }

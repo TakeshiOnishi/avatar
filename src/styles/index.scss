@@ -81,20 +81,7 @@ $layer4zIndex: 13;
   padding: 5%;
   background: rgba(220, 220, 220, 1);
   outline: none;
-
-  .iconUrl {
-    .inputUrl {
-      width: 100%;
-    }
-    .fromGoogleIconBtn {
-      text-align: right;
-    }
-    .submitUrl {
-      text-align: right;
-    }
-  }
 }
-
 .userSettingModalOverlay {
   z-index: $layer4zIndex;
   position: fixed;
