@@ -2,11 +2,14 @@ import React from "react"
 import Layout from "../components/layout"
 
 import 'firebaseui/dist/firebaseui.css'
+import IconSquareGif from "../images/icon.gif"
 
 const LoginPage = () => (
   <Layout>
-    <h1>ログインページ</h1>
-    <div className="js-firebaseAuth"></div>
+    <div style={{ width: '400px', margin: '0 auto', position: 'relative'}}>
+      <img src={IconSquareGif} width='100%' />
+      <div className="js-firebaseAuth" style={{textAlign: 'center'}}></div>
+    </div>
   </Layout>
 )
 
