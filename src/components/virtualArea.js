@@ -31,6 +31,7 @@ const VirtualArea = () => {
   )
 
   const areaContextValue = {
+    userPositions,
     setUserPositions,
     userIconWidth,
     userIconPadding

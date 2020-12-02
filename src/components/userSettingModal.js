@@ -25,8 +25,8 @@ const UserSettingModal = props => {
   const initIcon = () => {
     firebaseDB.ref(`${spaceNameForUserSetting}/${myUserId}`).once('value', data => {
       const fbVal = data.val()
-      if(fbVal !== null && inputUrl.current) {
-        inputUrl.current.value = fbVal.iconURL
+      if(fbVal !== null) {
+        setMyUserIconUrl(fbVal.iconURL)
       }
     })
   }
