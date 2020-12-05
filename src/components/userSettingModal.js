@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useRef } from "react"
+import React, { useState, useEffect, useContext, useRef } from "react"
 import { AppGlobalContext } from "./layout"
 import "../styles/layout.scss"
 import Modal from "react-modal"
@@ -12,19 +12,19 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons"
 const UserSettingModal = props => {
   Modal.setAppElement('body')
 
-  let inputUrl = useRef()
+  const inputIconUrl = useRef()
 
   const { 
     myUserId, 
     myUserIconUrl, 
-    setMyUserIconUrl, 
     myGoogleIconUrl,
+    setMyUserIconUrl,
     firebaseDB,
     spaceNameForUserSetting,
   } = useContext(AppGlobalContext)
 
   const clickFromGoogleIcon = ev => {
-    inputUrl.current.querySelector('input').value = myGoogleIconUrl
+    inputIconUrl.current.querySelector('input').value = myGoogleIconUrl
   }
 
   const initIcon = () => {
@@ -36,12 +36,12 @@ const UserSettingModal = props => {
     })
   }
 
-  const clickSubmitUrl = ev => {
-    let inputUrlVal = inputUrl.current.querySelector('input').value
+  const clickSave = ev => {
+    let inputIconUrlVal = inputIconUrl.current.querySelector('input').value
     firebaseDB.ref(`${spaceNameForUserSetting}/${myUserId}`).set({
-      iconURL: inputUrlVal,
+      iconURL: inputIconUrlVal,
     })
-    setMyUserIconUrl(inputUrlVal)
+    setMyUserIconUrl(inputIconUrlVal)
     toast.success(`アイコンを設定しました。`)
     props.setIsModalOpen(false)
   }
@@ -67,22 +67,22 @@ const UserSettingModal = props => {
       <ThemeProvider theme={theme}>
         <FontAwesomeIcon icon={faTimes} style={{fontSize: '1.2rem', position: 'absolute', right: '50px', top: '50px', cursor: 'pointer'}} onClick={() => props.setIsModalOpen(false)} />
 
-        <h4 style={{textAlign: 'center'}}>プロフィール画像を設定する</h4>
-        <TextField label='画像URLを入れてください。(https://xxxxxxx)' 
-          defaultValue={myUserIconUrl}
-          ref={inputUrl}
-          style={{width: '100%'}}
-        />
-
         <Grid container spacing={1} alignItems="flex-end" style={{marginTop: '20px'}}>
-          <Grid item>
-            <Button variant="contained" style={{marginRight: '5px'}} onClick={clickFromGoogleIcon}>Googleのユーザーアイコンを設定</Button>
-          </Grid>
-
-          <Grid item>
-            <Button variant="contained" color="primary" onClick={clickSubmitUrl}>画像URLをアイコンとして登録する</Button>
-          </Grid>
+          <h4 style={{textAlign: 'center', marginBottom: '10px'}}>プロフィール画像を設定</h4>
+          <TextField label='画像URLを入れてください。(https://xxxxxxx)' 
+            defaultValue={myUserIconUrl}
+            ref={inputIconUrl}
+            style={{width: '100%'}}
+          />
+          <Button variant="contained" style={{margin: '10px 0'}} onClick={clickFromGoogleIcon}>Googleのユーザーアイコンを設定</Button>
         </Grid>
+
+        <Button variant="contained" color="primary" onClick={clickSave} style={{
+          position: 'inherit',
+          right: '50px',
+          bottom: '50px',
+          padding: '15px 40px',
+        }}>保存</Button>
       </ThemeProvider>
     </Modal>
   )
