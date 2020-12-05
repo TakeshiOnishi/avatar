@@ -23,7 +23,7 @@
 [madge](https://github.com/pahen/madge)
 
 ```
-madge --exclude layout --image madge_graph.png src/pages/index.js
+madge --exclude (layout|png|jpg|gif|scss) --image madge_graph.png src/pages/
 ```
 
 <img src="./madge_graph.png" />
