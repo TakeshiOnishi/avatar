@@ -72,23 +72,30 @@ const StatusControl = props => {
         return (
           <ThemeProvider theme={theme}>
             <div className='statusControl' style={{
+              backgroundColor: '#FFF',
+              padding: '12px 24px',
               position: 'absolute',
-              top: '30px',
-              right: '30px',
+              top: '32px',
+              right: '32px',
+              borderRadius: '4px',
+              boxShadow: '0px 1px 4px rgba(0,0,0,0.24)',
             }}>
 
-              <Grid container spacing={3} alignItems="flex-end">
+              <Grid container style={{
+                display: 'flex',
+                alignItems: 'center',
+              }}>
                 <Grid item>
-                  <Button variant="outlined" style={{marginRight: '5px'}} onClick={() => props.setIsModalOpen(true)}>ユーザー設定変更</Button>
+                  <Button variant="outlined" style={{marginRight: '8px'}} onClick={() => props.setIsModalOpen(true)}>ユーザー設定変更</Button>
                 </Grid>
 
                 <Grid item>
-                  <Button variant="outlined" style={{marginRight: '5px'}} onClick={() => {joinRoom(user.myUserId, user.myUserName)}}>部屋に参加</Button>
-                  <Button variant="outlined" style={{marginRight: '5px'}} onClick={() => {outRoom(user.myUserId)}}>部屋から退出</Button>
+                  <Button variant="outlined" style={{marginRight: '8px'}} onClick={() => {joinRoom(user.myUserId, user.myUserName)}}>部屋に参加</Button>
+                  <Button variant="outlined" style={{marginRight: '8px'}} onClick={() => {outRoom(user.myUserId)}}>部屋から退出</Button>
                 </Grid>
 
                 <Grid item>
-                  <Select value={statusId} onBlur={null} onChange={handleStatusChange} style={{height: '40px', marginRight: '10px'}}>
+                  <Select value={statusId} onBlur={null} onChange={handleStatusChange} style={{height: '40px', marginRight: '24px'}}>
                     {[0,1,2,3].map(id => 
                       <MenuItem key={id} value={id}>
                         <span style={{ 
@@ -113,11 +120,13 @@ const StatusControl = props => {
                       vertical: 'bottom',
                       horizontal: 'right',
                     }}
-                    badgeContent={<FontAwesomeIcon icon={faCloudShowersHeavy} style={{fontSize: '1.2rem'}} />}
+                    badgeContent={<FontAwesomeIcon icon={faCloudShowersHeavy} style={{fontSize: '16px'}} />}
                   >
                     <Avatar alt={myUserName} src={myUserIconUrl} style={{
-                        border: '5px double',
+                        border: '4px double',
                         borderColor: statusIdToColorCode(statusId),
+                        width: '32px',
+                        height: '32px',
                       }} 
                       className={statusId === 3 ? 'rainbowC' : '' }
                     />

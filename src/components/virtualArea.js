@@ -9,7 +9,7 @@ const VirtualArea = () => {
   const { firebaseDB, spaceNameForUser } = useContext(AppGlobalContext)
   const [userIdList, setUserIdList] = useState([])
   const [userPositions, setUserPositions] = useState({})
-  const [userIconWidth] = useState(55)
+  const [userIconWidth] = useState(48)
 
   useEffect(
     () => {
