@@ -31,7 +31,7 @@ const DrawerChat = () => {
     <>
       <Button onClick={() => setIsOpen(true)} style={{
         position: 'absolute', 
-        top: '110px', 
+        bottom: '160px', 
         right: '32px',
         backgroundColor: '#ffffff',
         borderRadius: '4px',
