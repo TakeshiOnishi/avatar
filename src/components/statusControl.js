@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import { Grid, Button, Select, MenuItem, Avatar, Badge } from '@material-ui/core'
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles'
 import { brown } from '@material-ui/core/colors'
+import KeyboardEventHandler from 'react-keyboard-event-handler'
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
@@ -25,11 +26,15 @@ const StatusControl = props => {
   let [statusId, setStatusId] = useState(0)
 
   const handleStatusChange = ev => {
-    let statusId = ev.target.value //HACK: validCheck
+    let statusId = ev.target.value
+    updateStatus(statusId)
+  }
+  const updateStatus = statusId => {
+    if(![0,1,2,3].includes(statusId)){ return } // OPTIMIZE: 簡易valid
     firebaseDB.ref(`${spaceNameForStatus}/${myUserId}`).set({
       statusId: statusId
     })
-    setStatusId(ev.target.value)
+    setStatusId(statusId)
     toast.success(`ステータスを更新しました。`)
   }
 
@@ -61,6 +66,16 @@ const StatusControl = props => {
     },
   })
 
+  const triggerKeyBind = ev =>{
+    switch(ev) {
+      case 'ctrl+0': updateStatus(0); break;
+      case 'ctrl+1': updateStatus(1); break;
+      case 'ctrl+2': updateStatus(2); break;
+      case 'ctrl+3': updateStatus(3); break;
+      default: break;
+    }
+  }
+
   useEffect(
     () => {
       initStatus()
@@ -70,6 +85,11 @@ const StatusControl = props => {
   return(
     <>
       {myJoinState === true && <>
+        <KeyboardEventHandler 
+          handleKeys={['ctrl+0', 'ctrl+1', 'ctrl+2', 'ctrl+3']}
+          onKeyEvent={triggerKeyBind}
+          handleFocusableElements={true}
+        />
         <ThemeProvider theme={theme}>
           <div className='statusControl' style={{
             backgroundColor: '#FFF',
@@ -98,7 +118,7 @@ const StatusControl = props => {
                         display: 'inline-block',
                         verticalAlign: 'middle',
                       }}></span>
-                      {statusIdToString(id)}
+                      {statusIdToString(id)} <span style={{textSize: '0.6rem', color: '#CCC', paddingLeft: '0.3rem'}}>(ctrl+{id})</span>
                     </MenuItem>
                   )}
                 </Select>
