@@ -21,7 +21,6 @@ const DrawerChat = () => {
   const [isOpen, setIsOpen] = React.useState(false)
 
   const closeDrawerKey = (event) => {
-    console.log('hoge')
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return
     }
