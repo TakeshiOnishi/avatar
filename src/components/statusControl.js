@@ -70,7 +70,7 @@ const StatusControl = props => {
     <ThemeProvider theme={theme}>
       <div className='statusControl' style={{
         backgroundColor: '#FFF',
-        padding: '12px 24px',
+        padding: '14px 24px',
         position: 'absolute',
         top: '32px',
         right: '32px',
