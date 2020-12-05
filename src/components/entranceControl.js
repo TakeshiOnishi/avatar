@@ -12,14 +12,15 @@ const EntranceControl = props => {
     spaceNameForUser,
   } = useContext(AppGlobalContext)
 
-  const joinRoom = () => {
+  const joinRoom = (isAtHome) => {
     firebaseDB.ref(`${spaceNameForUser}/${myUserId}`).set({
       id: myUserId,
       name: myUserName,
+      isAtHome: isAtHome,
       x: window.innerWidth / 2  | 0,
       y: window.innerHeight / 2  | 0,
     })
-    toast.success(`部屋に参加しました。`);
+    toast.success(`部屋に入室しました。`);
   }
 
   const outRoom = () => {
@@ -29,8 +30,9 @@ const EntranceControl = props => {
 
   return (
     <>
-      <Button variant="outlined" style={{marginRight: '8px'}} onClick={joinRoom}>部屋に参加</Button>
-      <Button variant="outlined" onClick={outRoom}>部屋から退出</Button>
+      <Button variant="outlined" style={{marginRight: '8px'}} onClick={() => {joinRoom(1)}}>入室(在宅)</Button>
+      <Button variant="outlined" style={{marginRight: '8px'}} onClick={() => {joinRoom(0)}}>入室(出社)</Button>
+      <Button variant="outlined" onClick={outRoom}>退出</Button>
     </>
 
   )
