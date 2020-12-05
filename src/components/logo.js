@@ -11,7 +11,7 @@ const Logo = () => {
       top: '32px',
       left: '32px',
       borderRadius: '4px',
-      boxShadow: '0px 1px 4px rgba(0,0,0,0.24)'
+      boxShadow: '0px 1px 4px rgba(0,0,0,0.24)',
     }}>
     <img src={IconSquare} style={{
       width: '200px',
