@@ -40,7 +40,7 @@ const DrawerChat = () => {
       }}>
         <FontAwesomeIcon icon={faHistory} style={{fontSize: '16px', marginRight: '5px'}} />チャット履歴
       </Button>
-      <Drawer anchor='right' open={isOpen} onClose={closeDrawerKey} style>
+      <Drawer anchor='right' open={isOpen} onClose={closeDrawerKey}>
         <div style={{
             width: 250,
             padding: 15,
@@ -53,10 +53,9 @@ const DrawerChat = () => {
           </div>
           <div style={{marginTop: '60px', }}>
             <h4 style={{textAlign: 'center'}}>チャット履歴</h4>
-
             <List>
               {allChatMessageToMeList.reverse().map((chatObj, index) =>
-                <React.Fragment key={index}>
+                <div key={index}>
                   <ListItem alignItems="flex-start">
                     <ListItemAvatar>
                       <Avatar alt={chatObj.name} src={chatObj.iconUrl} />
@@ -65,21 +64,21 @@ const DrawerChat = () => {
                       primary={chatObj.name}
                       secondary={
                         <>
-                          <p style={{margin: '.25rem 0',}}>{chatObj.message}</p>
-                          <p style={{
+                          <span style={{margin: '.25rem 0', display: 'block'}}>{chatObj.message}</span>
+                          <span style={{
                              fontSize: '0.4rem',
                              fontStyle: 'italic',
                              textAlign: 'right',
-                          }}>{chatObj.date}</p>
+                             display: 'block',
+                          }}>{chatObj.date}</span>
                         </>
                       }
                     />
                   </ListItem>
                   <Divider />
-                </React.Fragment>
+                </div>
               )}
             </List>
-
           </div>
         </div>
       </Drawer>
