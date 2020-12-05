@@ -56,7 +56,13 @@ const DrawerChat = () => {
             <div style={{marginTop: '60px', }}>
               <h4 style={{textAlign: 'center'}}>チャット履歴</h4>
               <List>
-                {allChatMessageToMeList.reverse().map((chatObj, index) =>
+                {allChatMessageToMeList.sort((a, b) => {
+                  if (a.date < b.date) {
+                     return 1
+                   } else {
+                     return -1
+                   }
+                }).map((chatObj, index) =>
                   <div key={index}>
                     <ListItem alignItems="flex-start">
                       <ListItemAvatar>
