@@ -187,9 +187,10 @@ const UserIcon = (props) => {
             disabled={isMe ? false : true}
             >
               <div data-tip data-for={`reactTip${userId}`}>
-                {!isMe && <ReactTooltip id={`reactTip${userId}`}>
-                  {userId}
-                  </ReactTooltip>
+                {!isMe && <ReactTooltip id={`reactTip${userId}`} backgroundColor='#FFF' textColor='#332D2DD4' border={true} borderColor='#00000014'>
+                  <p style={{margin: '5px'}}>{userName}</p>
+                  <p style={{margin: '5px'}}>{statusIdToString(userStatusId)}</p>
+                </ReactTooltip>
                 }
                 <Badge
                   overlap="circle"
