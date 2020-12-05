@@ -2,6 +2,7 @@ $layer1zIndex: 11;
 $layer2zIndex: 12;
 $layer3zIndex: 13;
 $layer4zIndex: 13;
+$layer5zIndex: 14;
 
 .logo {
   z-index: $layer3zIndex;
@@ -32,7 +33,7 @@ $layer4zIndex: 13;
   padding: 0.3rem;
   min-width: 120px;
   background: #DDDBDB;
-  z-index: $layer1zIndex;
+  z-index: $layer4zIndex;
   &::before {
     content: "";
     position: absolute;
@@ -76,7 +77,7 @@ $layer4zIndex: 13;
   outline: none;
 }
 .userSettingModalOverlay {
-  z-index: $layer4zIndex;
+  z-index: $layer5zIndex;
   position: fixed;
   top: 0;
   left: 0;
