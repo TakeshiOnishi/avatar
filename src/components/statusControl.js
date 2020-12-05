@@ -4,9 +4,12 @@ import { toast } from 'react-toastify';
 import { Grid, Button, Select, MenuItem, Avatar, Badge } from '@material-ui/core'
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles'
 import { brown } from '@material-ui/core/colors'
-import KeyboardEventHandler from 'react-keyboard-event-handler'
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+
+let KeyboardEventHandler
+if (typeof window !== "undefined") {
+  KeyboardEventHandler = require('react-keyboard-event-handler')
+}
 
 const StatusControl = props => {
   const { 
