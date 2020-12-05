@@ -2,6 +2,7 @@ $layer1zIndex: 11;
 $layer2zIndex: 12;
 $layer3zIndex: 13;
 $layer4zIndex: 13;
+$layer5zIndex: 14;
 
 .logo {
   z-index: $layer3zIndex;
@@ -9,20 +10,22 @@ $layer4zIndex: 13;
 .statusControl {
   z-index: $layer2zIndex;
 }
+.chatBox {
+  z-index: $layer2zIndex;
+}
+
+.blink {
+  animation: flash 0.8s linear infinite;
+}
 @keyframes flash {
   0%,100% { opacity: 1; }
   50% { opacity: 0.2; }
 }
-.blink {
-  animation: flash 0.8s linear infinite;
-}
-@keyframes fadeOut {
-  0% { opacity: 1; }
-  70% { opacity: 1; }
-  100% { opacity: 0; }
-}
+
 .chatMessage {
   animation: fadeOut 5s linear 0s;
+  max-width: 300px;
+  word-wrap: break-word;
   animation-fill-mode: forwards;
   position: relative;
   display: inline-block;
@@ -30,21 +33,23 @@ $layer4zIndex: 13;
   padding: 0.3rem;
   min-width: 120px;
   background: #DDDBDB;
-  z-index: $layer1zIndex;
+  z-index: $layer4zIndex;
   &::before {
     content: "";
     position: absolute;
-    top: -25px;
+    top: -20px;
     left: 0;
     margin-left: 5px;
-    border: 15px solid transparent;
-    border-bottom: 20px solid #DDDBDB;
+    border: 10px solid transparent;
+    border-bottom: 10px solid #DDDBDB;
   }
 }
-
-.chatBox {
-  z-index: $layer2zIndex;
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  70% { opacity: 1; }
+  100% { opacity: 0; }
 }
+
 
 // ネタ
 .rainbowC {
@@ -61,17 +66,6 @@ $layer4zIndex: 13;
   100% {border-color: hsl(255, 100%, 50%);}
 }
 
-
-/* modal */
-.userSettingModalOpenBtn {
-  margin: 10px;
-}
-.userSettingModalCloseBtn {
-  position: absolute;
-  top: 2%;
-  right: 2%;
-}
-
 .userSettingModal {
   position: absolute;
   top: 20%;
@@ -79,15 +73,18 @@ $layer4zIndex: 13;
   right: 20%;
   bottom: 20%;
   padding: 5%;
-  background: rgba(220, 220, 220, 1);
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  box-shadow: 0px 1px 4px #00000024;
+  border-radius: 2px;
   outline: none;
+  z-index: $layer5zIndex;
 }
 .userSettingModalOverlay {
-  z-index: $layer4zIndex;
+  z-index: $layer5zIndex;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(255, 255, 255, .8);
+  background: #00000052 0% 0% no-repeat padding-box;
 }

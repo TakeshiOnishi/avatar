@@ -6,12 +6,16 @@ import { toast } from 'react-toastify'
 import { Grid, TextField, Select, MenuItem } from '@material-ui/core'
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles'
 import { brown } from '@material-ui/core/colors'
+import RangeIconSmall from "../images/range_icon_small.png"
+import RangeIconMiddle from "../images/range_icon_middle.png"
+import RangeIconLarge from "../images/range_icon_large.png"
 
 const ChatBox = props => {
   const { 
     myUserId, 
     myUserName,
     myRange,
+    myJoinState,
     setMyRange,
     firebaseDB,
     spaceNameForChat
@@ -52,7 +56,6 @@ const ChatBox = props => {
     if(nearlyUserIds.length >= 1) {
       firebaseDB.ref(`${spaceNameForChat}/${myUserId}`).set({
         message: textInput.value,
-        name: myUserName,
         date: dayjs().format('YYYY/MM/DD HH:mm:ss'),
         targetUserIds: nearlyUserIds
       })
@@ -103,30 +106,45 @@ const ChatBox = props => {
   })
 
   return (
-    <div className='chatBox' style={{
-      position: 'absolute', 
-      bottom: '32px', 
-      right: '32px',
-      backgroundColor: '#ffffff',
-      borderRadius: '4px',
-      boxShadow: '0px 1px 4px rgba(0,0,0,0.24)',
-      padding: '16px 24px',
-      }}>
-      <ThemeProvider theme={theme}>
-        <Grid container spacing={1} alignItems="flex-end">
-          <Grid item style={{marginRight: '8px',}}>
-            <Select value={myRange} onBlur={null} onChange={rangeSelectChange}>
-               <MenuItem key='l' value='L'>大</MenuItem>
-               <MenuItem key='m' value='M'>中</MenuItem>
-               <MenuItem key='s' value='S'>小</MenuItem>
-            </Select>
-          </Grid>
-          <Grid item style={{width: '320px',}}>
-            <TextField onKeyPress={enterCheck} placeholder={`チャット内容 ${maxTextLength}文字まで (ENTERで送信)`} width="32" style={{width: '100%', background: '#FFF'}} />
-          </Grid>
-        </Grid>
-      </ThemeProvider>
-    </div>
+    <>
+      {myJoinState === true && <>
+        <div style={{
+          position: 'absolute', 
+          bottom: '62px', 
+          right: '32px',
+          backgroundColor: '#ffffff',
+          borderRadius: '4px',
+          boxShadow: '0px 1px 4px rgba(0,0,0,0.24)',
+          padding: '16px 24px',
+          }}>
+          <ThemeProvider theme={theme}>
+            <Grid container spacing={1} alignItems="flex-end">
+              <Grid item style={{marginRight: '8px'}}>
+                <Select value={myRange} onBlur={null} onChange={rangeSelectChange} style={{padding: 0}}>
+                   <MenuItem key='l' value='L'><img src={RangeIconLarge} width='32px' /></MenuItem>
+                   <MenuItem key='m' value='M'><img src={RangeIconMiddle} width='32px' /></MenuItem>
+                   <MenuItem key='s' value='S'><img src={RangeIconSmall} width='32px' /></MenuItem>
+                </Select>
+              </Grid>
+              <Grid item style={{width: '370px',}}>
+                <TextField 
+                  onKeyPress={enterCheck} 
+                  placeholder={`チャット内容 ${maxTextLength}文字まで (ENTERで送信)`} 
+                  style={{width: '100%', background: '#FFF'}} 
+                  inputProps={{
+                  style: {
+                    height: 49,
+                    padding: '0 14px',
+                  },
+                  }}
+                />
+              </Grid>
+            </Grid>
+          </ThemeProvider>
+        </div>
+      </>
+      }
+    </>
   )
 }
 

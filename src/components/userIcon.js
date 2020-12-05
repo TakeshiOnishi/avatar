@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useContext } from "react"
-import { AppGlobalContext, statusIdToString, statusIdToColorCode, statusIdToActive, rangeSizeTxtToPixel } from "./layout"
+import { AppGlobalContext, statusIdToString, statusIdToColorCode, statusIdToActive, rangeSizeTxtToPixel, moodScoreToIcon } from "./layout"
 import { VirtualAreaContext } from "./virtualArea"
 import dayjs from "dayjs"
 import Draggable from 'react-draggable'
 import { toast } from 'react-toastify'
 import Push from "push.js"
+import ReactTooltip from 'react-tooltip'
 import IconSquare from "../images/icon_small.jpg"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 import { Avatar, Badge } from '@material-ui/core'
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faCloudShowersHeavy } from "@fortawesome/free-solid-svg-icons"
 
 const UserIcon = (props) => {
   const { 
@@ -19,20 +19,24 @@ const UserIcon = (props) => {
     spaceNameForChat,
     spaceNameForStatus,
     spaceNameForUserSetting,
+    spaceNameForUserMood,
   } = useContext(AppGlobalContext)
   const { 
     userIconWidth, 
     userIconPadding,
     setUserPositions,
+    setAllChatMessageToMeList,
   } = useContext(VirtualAreaContext)
 
   const [isMe, setIsMe] = useState(false)
   const [userId] = useState(props.id)
   const [userName, setUserName] = useState('')
+  const [userIsAtHome, setUserIsAtHome] = useState(0)
   const [userStatusId, setUserStatusId] = useState(0)
+  const [userMood, setUserMood] = useState(0)
   const [userIconUrl, setUserIconUrl] = useState('')
-  const [positionX, setPositionX] = useState(0)
-  const [positionY, setPositionY] = useState(0)
+  const [positionX, setPositionX] = useState(-100)
+  const [positionY, setPositionY] = useState(-100)
   const [dragPxCount, setDragPxCount] = useState(0)
   const [chatMessageList, setChatMessageList] = useState([])
   const [userIconStyle, setUserIconStyle] = useState({
@@ -46,9 +50,18 @@ const UserIcon = (props) => {
   const initUserIcon = () => {
     firebaseDB.ref(`${spaceNameForUser}/${userId}`).once('value', data => {
       const fbVal = data.val()
+      setUserIsAtHome(fbVal.isAtHome)
       setUserName(fbVal.name)
       setPositionX(fbVal.x)
       setPositionY(fbVal.y)
+    })
+  }
+
+  const initUserMood = () => {
+    firebaseDB.ref(`${spaceNameForUserMood}/${userId}`).once('value', data => {
+      const fbVal = data.val()
+      if(fbVal === null) { return }
+      setUserMood(fbVal.moodScore)
     })
   }
 
@@ -81,7 +94,16 @@ const UserIcon = (props) => {
     })
   }
 
+  const receiveUserMood = () => {
+    firebaseDB.ref(`${spaceNameForUserMood}/${userId}`).on('value', data => {
+      const fbVal = data.val()
+      if (fbVal === null) { return }
+      setUserMood(fbVal.moodScore)
+    })
+  }
+
   const receiveMessage = () => {
+    firebaseDB.ref(`${spaceNameForChat}/${userId}`).off()
     firebaseDB.ref(`${spaceNameForChat}/${userId}`).on('value', data => {
       const fbVal = data.val()
       if (fbVal === null) { return }
@@ -90,18 +112,18 @@ const UserIcon = (props) => {
         if(fbVal.targetUserIds === undefined) { return }
         let messageToMe = fbVal.targetUserIds.includes(myUserId)
         if(messageToMe){
-          Push.create(`${fbVal.name}さんからチャットが届きました`, {
+          Push.create(`${userName}さんからチャットが届きました`, {
             body: fbVal.message,
             icon: IconSquare,
             onClick: ev => {
               window.focus()
               ev.currentTarget.close()
-            }
+            },
+            timeout: 2000
           })
-
-          setChatMessageList(current => 
-            [...current, fbVal.message]
-          )
+        setChatMessageList(current => [...current, fbVal.message])
+        setAllChatMessageToMeList(current => 
+          [...current, {name: userName, iconUrl: userIconUrl, message: fbVal.message, date: fbVal.date}])
         }
       }
     })
@@ -111,11 +133,18 @@ const UserIcon = (props) => {
     () => {
       setIsMe(myUserId === userId)
       initUserIcon()
+      initUserMood()
       receiveUserIconPositionChange()
       receiveUserIconImageChange()
       receiveUserIconStatus()
+      receiveUserMood()
+    }, []
+  )
+
+  useEffect(
+    () => {
       receiveMessage()
-    }, [ userId ]
+    }, [ userName, userIconUrl ]
   )
 
   useEffect(
@@ -154,58 +183,65 @@ const UserIcon = (props) => {
         {(user) => {
           return (
             <Draggable 
-            bounds="parent"
             position={{x: positionX, y: positionY}}
             onDrag={userIconOnDrag}
             onStop={userIconOnStop}
             disabled={isMe ? false : true}
             >
-              <Badge
-                overlap="circle"
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'right',
-                }}
-                badgeContent={<FontAwesomeIcon icon={faCloudShowersHeavy} style={{fontSize: '1.2rem'}} />}
-                style={{
-                  position: 'absolute',
-                  cursor: 'pointer',
-                }}
-              >
-                <div id={`userIcon-${userId}`}>
-                  <Avatar alt={userName} src={userIconUrl} style={{
-                      border: '5px double',
-                      boxSizing: 'border-box',
-                      borderColor: statusIdToColorCode(userStatusId),
-                      width: userIconWidth,
-                      height: userIconWidth,
-                      opacity: statusIdToActive(userStatusId) ? '0.25' : '1',
-                      pointerEvents: 'none',
-                    }} 
-                    className={userStatusId === 3 ? 'rainbowC' : '' }
-                  />
-                  {isMe && <div style={{
-                    boxSizing: 'border-box',
+              <div data-tip data-for={`reactTip${userId}`}>
+                {!isMe && <ReactTooltip id={`reactTip${userId}`} backgroundColor='#FFF' textColor='#332D2DD4' border={true} borderColor='#00000014'>
+                  <p style={{margin: '5px'}}>{userName} ({userIsAtHome? '在宅' : '出社'})</p>
+                  <p style={{margin: '5px'}}>{statusIdToString(userStatusId)}</p>
+                </ReactTooltip>
+                }
+                <Badge
+                  overlap="circle"
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                  }}
+                  badgeContent={<FontAwesomeIcon icon={moodScoreToIcon(userMood)} style={{fontSize: '1.3rem', background: '#FFF', color: '#715246', borderRadius: '50%'}} />}
+                  style={{
                     position: 'absolute',
-                    content: '',
-                    width: userIconWidth + rangeSizeTxtToPixel(user.myRange),
-                    height: userIconWidth + rangeSizeTxtToPixel(user.myRange),
-                    top: rangeSizeTxtToPixel(user.myRange) / 2 * -1,
-                    left: rangeSizeTxtToPixel(user.myRange) / 2 * -1,
-                    border: '2px dotted #A69286',
-                    borderRadius: '50%',
-                  }} />}
+                    cursor: 'pointer',
+                  }}
+                >
+                  <div id={`userIcon-${userId}`}>
+                    <Avatar alt={userName} src={userIconUrl} style={{
+                        border: '5px double',
+                        boxSizing: 'border-box',
+                        borderColor: statusIdToColorCode(userStatusId),
+                        width: userIconWidth,
+                        height: userIconWidth,
+                        opacity: statusIdToActive(userStatusId) ? '0.25' : '1',
+                        pointerEvents: 'none',
+                      }} 
+                      className={userStatusId === 3 ? 'rainbowC' : '' }
+                    />
+                    {isMe && <div style={{
+                      boxSizing: 'border-box',
+                      position: 'absolute',
+                      content: '',
+                      width: userIconWidth + rangeSizeTxtToPixel(user.myRange),
+                      height: userIconWidth + rangeSizeTxtToPixel(user.myRange),
+                      top: rangeSizeTxtToPixel(user.myRange) / 2 * -1,
+                      left: rangeSizeTxtToPixel(user.myRange) / 2 * -1,
+                      border: '2px dotted #A69286',
+                      borderRadius: '50%',
+                    }} />}
 
-                  <div style={{position: 'absolute'}}>
-                    {chatMessageList.map((chatMessage, index) => 
-                      <div key={index} className='chatMessage' onAnimationEnd={messageAnimationEnd}>
-                        <p style={{fontSize: '0.5rem', color: '#777', margin: 0}}>{userName}</p>
-                        <p style={{margin:0}}>{chatMessage}</p>
-                      </div>
-                    )}
+                    <div style={{position: 'absolute'}}>
+                      {chatMessageList.map((chatMessage, index) => 
+                        <div key={index} className='chatMessage' onAnimationEnd={messageAnimationEnd}>
+                          <p style={{fontSize: '0.5rem', color: '#777', margin: 0}}>{userName}</p>
+                          <p style={{margin:0}}>{chatMessage}</p>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              </Badge>
+                </Badge>
+                <ReactTooltip />
+              </div>
             </Draggable>
           )
         }}
