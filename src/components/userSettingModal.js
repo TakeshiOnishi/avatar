@@ -42,7 +42,8 @@ const UserSettingModal = props => {
       iconURL: inputUrlVal,
     })
     setMyUserIconUrl(inputUrlVal)
-    toast.success(`アイコンを設定しました。`);
+    toast.success(`アイコンを設定しました。`)
+    props.setIsModalOpen(false)
   }
 
   const theme = createMuiTheme({
@@ -64,7 +65,7 @@ const UserSettingModal = props => {
       isOpen={props.isModalOpen}
     >
       <ThemeProvider theme={theme}>
-        <FontAwesomeIcon icon={faTimes} style={{fontSize: '1.2rem', position: 'absolute', right: '50px', top: '50px'}} onClick={() => props.setIsModalOpen(false)} />
+        <FontAwesomeIcon icon={faTimes} style={{fontSize: '1.2rem', position: 'absolute', right: '50px', top: '50px', cursor: 'pointer'}} onClick={() => props.setIsModalOpen(false)} />
 
         <h4 style={{textAlign: 'center'}}>プロフィール画像を設定する</h4>
         <TextField label='画像URLを入れてください。(https://xxxxxxx)' 

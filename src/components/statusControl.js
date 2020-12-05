@@ -67,10 +67,6 @@ const StatusControl = props => {
           alignItems: 'center',
         }}>
           <Grid item>
-            <Button variant="outlined" style={{marginRight: '8px'}} onClick={() => props.setIsModalOpen(true)}>ユーザー設定変更</Button>
-          </Grid>
-
-          <Grid item>
             <Select value={statusId} onBlur={null} onChange={handleStatusChange} style={{height: '40px', marginRight: '24px'}}>
               {[0,1,2,3].map(id => 
                 <MenuItem key={id} value={id}>
@@ -103,8 +99,10 @@ const StatusControl = props => {
                   borderColor: statusIdToColorCode(statusId),
                   width: '32px',
                   height: '32px',
+                  cursor: 'pointer',
                 }} 
                 className={statusId === 3 ? 'rainbowC' : '' }
+                onClick={() => props.setIsModalOpen(true)}
               />
             </Badge>
           </Grid>
