@@ -1,15 +1,14 @@
 import React, { useState, useEffect, useContext } from "react"
-import { AppGlobalContext, statusIdToString, statusIdToColorCode, statusIdToActive, rangeSizeTxtToPixel } from "./layout"
+import { AppGlobalContext, statusIdToString, statusIdToColorCode, statusIdToActive, rangeSizeTxtToPixel, moodScoreToIcon } from "./layout"
 import { VirtualAreaContext } from "./virtualArea"
 import dayjs from "dayjs"
 import Draggable from 'react-draggable'
 import { toast } from 'react-toastify'
 import Push from "push.js"
 import IconSquare from "../images/icon_small.jpg"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 import { Avatar, Badge } from '@material-ui/core'
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faCloudShowersHeavy } from "@fortawesome/free-solid-svg-icons"
 
 const UserIcon = (props) => {
   const { 
@@ -19,6 +18,7 @@ const UserIcon = (props) => {
     spaceNameForChat,
     spaceNameForStatus,
     spaceNameForUserSetting,
+    spaceNameForUserMood,
   } = useContext(AppGlobalContext)
   const { 
     userIconWidth, 
@@ -31,6 +31,7 @@ const UserIcon = (props) => {
   const [userId] = useState(props.id)
   const [userName, setUserName] = useState('')
   const [userStatusId, setUserStatusId] = useState(0)
+  const [userMood, setUserMood] = useState(0)
   const [userIconUrl, setUserIconUrl] = useState('')
   const [positionX, setPositionX] = useState(0)
   const [positionY, setPositionY] = useState(0)
@@ -50,6 +51,14 @@ const UserIcon = (props) => {
       setUserName(fbVal.name)
       setPositionX(fbVal.x)
       setPositionY(fbVal.y)
+    })
+  }
+
+  const initUserMood = () => {
+    firebaseDB.ref(`${spaceNameForUserMood}/${userId}`).once('value', data => {
+      const fbVal = data.val()
+      if(fbVal === null) { return }
+      setUserMood(fbVal.moodScore)
     })
   }
 
@@ -79,6 +88,14 @@ const UserIcon = (props) => {
       const fbVal = data.val()
       if (fbVal === null) { return }
       setUserStatusId(fbVal.statusId)
+    })
+  }
+
+  const receiveUserMood = () => {
+    firebaseDB.ref(`${spaceNameForUserMood}/${userId}`).on('value', data => {
+      const fbVal = data.val()
+      if (fbVal === null) { return }
+      setUserMood(fbVal.moodScore)
     })
   }
 
@@ -113,9 +130,11 @@ const UserIcon = (props) => {
     () => {
       setIsMe(myUserId === userId)
       initUserIcon()
+      initUserMood()
       receiveUserIconPositionChange()
       receiveUserIconImageChange()
       receiveUserIconStatus()
+      receiveUserMood()
     }, []
   )
 
@@ -172,7 +191,7 @@ const UserIcon = (props) => {
                   vertical: 'bottom',
                   horizontal: 'right',
                 }}
-                badgeContent={<FontAwesomeIcon icon={faCloudShowersHeavy} style={{fontSize: '1.2rem'}} />}
+                badgeContent={<FontAwesomeIcon icon={moodScoreToIcon(userMood)} style={{fontSize: '1.3rem', background: '#FFF', color: '#715246', borderRadius: '50%'}} />}
                 style={{
                   position: 'absolute',
                   cursor: 'pointer',

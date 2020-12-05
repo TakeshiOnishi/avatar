@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useContext } from "react"
-import { AppGlobalContext, statusIdToString, statusIdToColorCode } from "./layout"
+import { AppGlobalContext, statusIdToString, statusIdToColorCode, moodScoreToIcon } from "./layout"
 import { toast } from 'react-toastify';
 import { Grid, Button, Select, MenuItem, Avatar, Badge } from '@material-ui/core'
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faCloudShowersHeavy } from "@fortawesome/free-solid-svg-icons"
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles'
 import { brown } from '@material-ui/core/colors'
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 const StatusControl = props => {
   const { 
@@ -13,9 +13,12 @@ const StatusControl = props => {
     myUserName,
     myUserIconUrl,
     setMyUserStatusId,
+    myMood,
+    setMyMood,
     firebaseDB,
     spaceNameForUser,
     spaceNameForStatus,
+    spaceNameForUserMood,
   } = useContext(AppGlobalContext)
 
   let [statusId, setStatusId] = useState(0)
@@ -29,11 +32,24 @@ const StatusControl = props => {
     toast.success(`ステータスを更新しました。`)
   }
 
+  const moodSelectChange = ev => {
+    firebaseDB.ref(`${spaceNameForUserMood}/${myUserId}`).set({
+      moodScore: ev.target.value,
+    })
+    setMyMood(ev.target.value)
+  }
+
   const initStatus = () => {
     firebaseDB.ref(`${spaceNameForStatus}/${myUserId}`).once('value', data => {
       const fbVal = data.val()
       if(fbVal !== null) {
         setStatusId(fbVal.statusId)
+      }
+    })
+    firebaseDB.ref(`${spaceNameForUserMood}/${myUserId}`).once('value', data => {
+      const fbVal = data.val()
+      if(fbVal !== null) {
+        setMyMood(fbVal.moodScore)
       }
     })
   }
@@ -67,7 +83,7 @@ const StatusControl = props => {
           alignItems: 'center',
         }}>
           <Grid item>
-            <Select value={statusId} onBlur={null} onChange={handleStatusChange} style={{height: '40px', marginRight: '24px'}}>
+           <Select value={statusId} onBlur={null} onChange={handleStatusChange} style={{height: '40px', marginRight: '24px'}}>
               {[0,1,2,3].map(id => 
                 <MenuItem key={id} value={id}>
                   <span style={{ 
@@ -86,13 +102,23 @@ const StatusControl = props => {
           </Grid>
 
           <Grid item>
+            <Select value={myMood} onBlur={null} onChange={moodSelectChange} style={{marginRight: '24px', padding: '0 5px'}}>
+              {[2,1,0,-1,-2].map((score, index) => 
+                <MenuItem key={index} value={score}>
+                  <FontAwesomeIcon icon={moodScoreToIcon(score)} style={{fontSize: '24px'}} />
+                </MenuItem>
+              )}
+            </Select>
+          </Grid>
+
+          <Grid item>
             <Badge
               overlap="circle"
               anchorOrigin={{
                 vertical: 'bottom',
                 horizontal: 'right',
               }}
-              badgeContent={<FontAwesomeIcon icon={faCloudShowersHeavy} style={{fontSize: '16px'}} />}
+              badgeContent={<FontAwesomeIcon icon={moodScoreToIcon(myMood)} style={{fontSize: '1.3rem', background: '#FFF', color: '#715246', borderRadius: '50%'}} />}
             >
               <Avatar alt={myUserName} src={myUserIconUrl} style={{
                   border: '4px double',

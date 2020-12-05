@@ -11,9 +11,28 @@ import AppleTouchIcon from "../images/apple-touch-icon.jpg"
 import IconSquare from "../images/icon_small.jpg"
 import IconSquareGif from "../images/icon.gif"
 
+// 感情順番 + -> -
+import { 
+  faSmileWink, faLaughSquint,
+  faMehBlank,
+  faFrownOpen, faDizzy
+} from "@fortawesome/free-regular-svg-icons"
+
 import { firebaseLogin, createFirebaseDatabase } from "../lib/firebase"
 
-// HACK: libにしたい & sizeをAPI化
+// HACK: libにしたい
+export const moodScoreToIcon = (moodScore) => {
+  let tag
+  switch (parseInt(moodScore)) {
+    case  2: tag = faLaughSquint; break
+    case  1: tag = faSmileWink; break
+    case  0: tag = faMehBlank; break
+    case  -1: tag = faFrownOpen; break
+    case  -2: tag = faDizzy; break
+    default: console.log('invalid val'); break;
+  }
+  return tag
+}
 export const rangeSizeMap = (sizeString) => {
   let rangePixel
   switch (sizeString) {
@@ -77,6 +96,7 @@ const Layout = ({ path, children }) => {
   const [spaceNameForChat] = useState('chat')
   const [spaceNameForStatus] = useState('status')
   const [spaceNameForUserSetting] = useState('user_setting')
+  const [spaceNameForUserMood] = useState('user_mood')
 
   // myStatus
   const [myUserId, setMyUserId] = useState('')
@@ -84,6 +104,7 @@ const Layout = ({ path, children }) => {
   const [myUserStatusId, setMyUserStatusId] = useState(0)
   const [myUserIconUrl, setMyUserIconUrl] = useState('')
   const [myRange, setMyRange] = useState('M')
+  const [myMood, setMyMood] = useState(0)
   const [myGoogleIconUrl, setMyGoogleIconUrl] = useState('')
 
   firebaseLogin().then(res =>{
@@ -100,6 +121,7 @@ const Layout = ({ path, children }) => {
     spaceNameForUser, 
     spaceNameForChat, 
     spaceNameForStatus, 
+    spaceNameForUserMood,
     myUserId, 
     myUserName,
     myUserStatusId,
@@ -109,6 +131,8 @@ const Layout = ({ path, children }) => {
     myGoogleIconUrl,
     myRange,
     setMyRange,
+    myMood,
+    setMyMood,
     spaceNameForUserSetting,
     spaceNameForNotifyApproach,
   }
