@@ -98,7 +98,8 @@ const UserIcon = (props) => {
             onClick: ev => {
               window.focus()
               ev.currentTarget.close()
-            }
+            },
+            timeout: 2000
           })
         setChatMessageList(current => [...current, fbVal.message])
         setAllChatMessageToMeList(current => 
