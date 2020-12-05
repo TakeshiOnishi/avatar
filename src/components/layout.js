@@ -106,6 +106,7 @@ const Layout = ({ path, children }) => {
   const [myRange, setMyRange] = useState('M')
   const [myMood, setMyMood] = useState(0)
   const [myGoogleIconUrl, setMyGoogleIconUrl] = useState('')
+  const [myJoinState, setMyJoinState] = useState(false)
 
   firebaseLogin().then(res =>{
     if(res !== null){
@@ -133,6 +134,8 @@ const Layout = ({ path, children }) => {
     setMyRange,
     myMood,
     setMyMood,
+    myJoinState,
+    setMyJoinState,
     spaceNameForUserSetting,
     spaceNameForNotifyApproach,
   }

@@ -7,7 +7,7 @@ import { AppGlobalContext } from "./layout"
 export const VirtualAreaContext = createContext()
 
 const VirtualArea = () => {
-  const { firebaseDB, spaceNameForUser } = useContext(AppGlobalContext)
+  const { myUserId, setMyJoinState, firebaseDB, spaceNameForUser } = useContext(AppGlobalContext)
   const [userIdList, setUserIdList] = useState([])
   const [allChatMessageToMeList, setAllChatMessageToMeList] = useState([])
   const [userPositions, setUserPositions] = useState({})
@@ -17,6 +17,11 @@ const VirtualArea = () => {
     () => {
       firebaseDB.ref(spaceNameForUser).on("child_removed", data => {
         const fbKey = data.key
+
+        if(myUserId === fbKey){
+          setMyJoinState(false)
+        }
+
         setUserIdList(current => {
           return current.filter(elm => {
             return elm !== fbKey
@@ -26,6 +31,9 @@ const VirtualArea = () => {
 
       firebaseDB.ref(spaceNameForUser).on("child_added", data => {
         const fbKey = data.key
+        if(myUserId === fbKey){
+          setMyJoinState(true)
+        }
         setUserIdList(current => [...current, fbKey])
       })
     }, []

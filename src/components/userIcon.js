@@ -31,11 +31,12 @@ const UserIcon = (props) => {
   const [isMe, setIsMe] = useState(false)
   const [userId] = useState(props.id)
   const [userName, setUserName] = useState('')
+  const [userIsAtHome, setUserIsAtHome] = useState(0)
   const [userStatusId, setUserStatusId] = useState(0)
   const [userMood, setUserMood] = useState(0)
   const [userIconUrl, setUserIconUrl] = useState('')
-  const [positionX, setPositionX] = useState(0)
-  const [positionY, setPositionY] = useState(0)
+  const [positionX, setPositionX] = useState(-100)
+  const [positionY, setPositionY] = useState(-100)
   const [dragPxCount, setDragPxCount] = useState(0)
   const [chatMessageList, setChatMessageList] = useState([])
   const [userIconStyle, setUserIconStyle] = useState({
@@ -49,6 +50,7 @@ const UserIcon = (props) => {
   const initUserIcon = () => {
     firebaseDB.ref(`${spaceNameForUser}/${userId}`).once('value', data => {
       const fbVal = data.val()
+      setUserIsAtHome(fbVal.isAtHome)
       setUserName(fbVal.name)
       setPositionX(fbVal.x)
       setPositionY(fbVal.y)
@@ -188,7 +190,7 @@ const UserIcon = (props) => {
             >
               <div data-tip data-for={`reactTip${userId}`}>
                 {!isMe && <ReactTooltip id={`reactTip${userId}`} backgroundColor='#FFF' textColor='#332D2DD4' border={true} borderColor='#00000014'>
-                  <p style={{margin: '5px'}}>{userName}</p>
+                  <p style={{margin: '5px'}}>{userName} ({userIsAtHome? '在宅' : '出社'})</p>
                   <p style={{margin: '5px'}}>{statusIdToString(userStatusId)}</p>
                 </ReactTooltip>
                 }

@@ -9,20 +9,22 @@ $layer4zIndex: 13;
 .statusControl {
   z-index: $layer2zIndex;
 }
+.chatBox {
+  z-index: $layer2zIndex;
+}
+
+.blink {
+  animation: flash 0.8s linear infinite;
+}
 @keyframes flash {
   0%,100% { opacity: 1; }
   50% { opacity: 0.2; }
 }
-.blink {
-  animation: flash 0.8s linear infinite;
-}
-@keyframes fadeOut {
-  0% { opacity: 1; }
-  70% { opacity: 1; }
-  100% { opacity: 0; }
-}
+
 .chatMessage {
   animation: fadeOut 5s linear 0s;
+  max-width: 300px;
+  word-wrap: break-word;
   animation-fill-mode: forwards;
   position: relative;
   display: inline-block;
@@ -34,17 +36,19 @@ $layer4zIndex: 13;
   &::before {
     content: "";
     position: absolute;
-    top: -25px;
+    top: -20px;
     left: 0;
     margin-left: 5px;
-    border: 15px solid transparent;
-    border-bottom: 20px solid #DDDBDB;
+    border: 10px solid transparent;
+    border-bottom: 10px solid #DDDBDB;
   }
 }
-
-.chatBox {
-  z-index: $layer2zIndex;
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  70% { opacity: 1; }
+  100% { opacity: 0; }
 }
+
 
 // ネタ
 .rainbowC {
@@ -59,17 +63,6 @@ $layer4zIndex: 13;
   70% {border-color: hsl(280,100%,50%);}
   84% {border-color: hsl(320,100%,50%);}
   100% {border-color: hsl(255, 100%, 50%);}
-}
-
-
-/* modal */
-.userSettingModalOpenBtn {
-  margin: 10px;
-}
-.userSettingModalCloseBtn {
-  position: absolute;
-  top: 2%;
-  right: 2%;
 }
 
 .userSettingModal {
