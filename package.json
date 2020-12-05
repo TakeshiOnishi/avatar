@@ -32,7 +32,8 @@
     "react-draggable": "^4.4.3",
     "react-helmet": "^6.1.0",
     "react-modal": "^3.12.1",
-    "react-toastify": "^6.1.0"
+    "react-toastify": "^6.1.0",
+    "react-tooltip": "^4.2.11"
   },
   "devDependencies": {
     "prettier": "2.1.2"

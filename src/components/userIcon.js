@@ -5,6 +5,7 @@ import dayjs from "dayjs"
 import Draggable from 'react-draggable'
 import { toast } from 'react-toastify'
 import Push from "push.js"
+import ReactTooltip from 'react-tooltip'
 import IconSquare from "../images/icon_small.jpg"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
@@ -185,52 +186,59 @@ const UserIcon = (props) => {
             onStop={userIconOnStop}
             disabled={isMe ? false : true}
             >
-              <Badge
-                overlap="circle"
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'right',
-                }}
-                badgeContent={<FontAwesomeIcon icon={moodScoreToIcon(userMood)} style={{fontSize: '1.3rem', background: '#FFF', color: '#715246', borderRadius: '50%'}} />}
-                style={{
-                  position: 'absolute',
-                  cursor: 'pointer',
-                }}
-              >
-                <div id={`userIcon-${userId}`}>
-                  <Avatar alt={userName} src={userIconUrl} style={{
-                      border: '5px double',
-                      boxSizing: 'border-box',
-                      borderColor: statusIdToColorCode(userStatusId),
-                      width: userIconWidth,
-                      height: userIconWidth,
-                      opacity: statusIdToActive(userStatusId) ? '0.25' : '1',
-                      pointerEvents: 'none',
-                    }} 
-                    className={userStatusId === 3 ? 'rainbowC' : '' }
-                  />
-                  {isMe && <div style={{
-                    boxSizing: 'border-box',
+              <div data-tip data-for={`reactTip${userId}`}>
+                {!isMe && <ReactTooltip id={`reactTip${userId}`}>
+                  {userId}
+                  </ReactTooltip>
+                }
+                <Badge
+                  overlap="circle"
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                  }}
+                  badgeContent={<FontAwesomeIcon icon={moodScoreToIcon(userMood)} style={{fontSize: '1.3rem', background: '#FFF', color: '#715246', borderRadius: '50%'}} />}
+                  style={{
                     position: 'absolute',
-                    content: '',
-                    width: userIconWidth + rangeSizeTxtToPixel(user.myRange),
-                    height: userIconWidth + rangeSizeTxtToPixel(user.myRange),
-                    top: rangeSizeTxtToPixel(user.myRange) / 2 * -1,
-                    left: rangeSizeTxtToPixel(user.myRange) / 2 * -1,
-                    border: '2px dotted #A69286',
-                    borderRadius: '50%',
-                  }} />}
+                    cursor: 'pointer',
+                  }}
+                >
+                  <div id={`userIcon-${userId}`}>
+                    <Avatar alt={userName} src={userIconUrl} style={{
+                        border: '5px double',
+                        boxSizing: 'border-box',
+                        borderColor: statusIdToColorCode(userStatusId),
+                        width: userIconWidth,
+                        height: userIconWidth,
+                        opacity: statusIdToActive(userStatusId) ? '0.25' : '1',
+                        pointerEvents: 'none',
+                      }} 
+                      className={userStatusId === 3 ? 'rainbowC' : '' }
+                    />
+                    {isMe && <div style={{
+                      boxSizing: 'border-box',
+                      position: 'absolute',
+                      content: '',
+                      width: userIconWidth + rangeSizeTxtToPixel(user.myRange),
+                      height: userIconWidth + rangeSizeTxtToPixel(user.myRange),
+                      top: rangeSizeTxtToPixel(user.myRange) / 2 * -1,
+                      left: rangeSizeTxtToPixel(user.myRange) / 2 * -1,
+                      border: '2px dotted #A69286',
+                      borderRadius: '50%',
+                    }} />}
 
-                  <div style={{position: 'absolute'}}>
-                    {chatMessageList.map((chatMessage, index) => 
-                      <div key={index} className='chatMessage' onAnimationEnd={messageAnimationEnd}>
-                        <p style={{fontSize: '0.5rem', color: '#777', margin: 0}}>{userName}</p>
-                        <p style={{margin:0}}>{chatMessage}</p>
-                      </div>
-                    )}
+                    <div style={{position: 'absolute'}}>
+                      {chatMessageList.map((chatMessage, index) => 
+                        <div key={index} className='chatMessage' onAnimationEnd={messageAnimationEnd}>
+                          <p style={{fontSize: '0.5rem', color: '#777', margin: 0}}>{userName}</p>
+                          <p style={{margin:0}}>{chatMessage}</p>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              </Badge>
+                </Badge>
+                <ReactTooltip />
+              </div>
             </Draggable>
           )
         }}
