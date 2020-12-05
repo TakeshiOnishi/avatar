@@ -1,5 +1,6 @@
 import React from "react"
 import IconSquare from "../images/logo_horizontal.png"
+import EntranceControl from "./entranceControl"
 
 const Logo = () => {
   return(
@@ -13,10 +14,13 @@ const Logo = () => {
       borderRadius: '4px',
       boxShadow: '0px 1px 4px rgba(0,0,0,0.24)',
     }}>
-    <img src={IconSquare} style={{
-      width: '200px',
-      verticalAlign: 'top',
-      } }/>
+      <img src={IconSquare} style={{
+        width: '200px',
+        marginRight: '24px',
+        verticalAlign: 'top',
+        } }/>
+
+      <EntranceControl />
     </div>
   )
 }
