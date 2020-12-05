@@ -103,18 +103,26 @@ const ChatBox = props => {
   })
 
   return (
-    <div className='chatBox' style={{position: 'absolute', bottom: '100px', right: '10px', width: '60%'}}>
+    <div className='chatBox' style={{
+      position: 'absolute', 
+      bottom: '32px', 
+      right: '32px',
+      backgroundColor: '#ffffff',
+      borderRadius: '4px',
+      boxShadow: '0px 1px 4px rgba(0,0,0,0.24)',
+      padding: '16px 24px',
+      }}>
       <ThemeProvider theme={theme}>
         <Grid container spacing={1} alignItems="flex-end">
-          <Grid item>
+          <Grid item style={{marginRight: '8px',}}>
             <Select value={myRange} onBlur={null} onChange={rangeSelectChange}>
                <MenuItem key='l' value='L'>大</MenuItem>
                <MenuItem key='m' value='M'>中</MenuItem>
                <MenuItem key='s' value='S'>小</MenuItem>
             </Select>
           </Grid>
-          <Grid item style={{width: '90%'}}>
-            <TextField onKeyPress={enterCheck} label={`チャット内容 ${maxTextLength}文字まで (ENTERで送信)`} width="50" style={{width: '100%', background: '#FFF'}} />
+          <Grid item style={{width: '320px',}}>
+            <TextField onKeyPress={enterCheck} placeholder={`チャット内容 ${maxTextLength}文字まで (ENTERで送信)`} width="32" style={{width: '100%', background: '#FFF'}} />
           </Grid>
         </Grid>
       </ThemeProvider>
