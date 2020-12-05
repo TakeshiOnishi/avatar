@@ -24,6 +24,7 @@ const UserIcon = (props) => {
     userIconWidth, 
     userIconPadding,
     setUserPositions,
+    setAllChatMessageToMeList,
   } = useContext(VirtualAreaContext)
 
   const [isMe, setIsMe] = useState(false)
@@ -82,6 +83,7 @@ const UserIcon = (props) => {
   }
 
   const receiveMessage = () => {
+    firebaseDB.ref(`${spaceNameForChat}/${userId}`).off()
     firebaseDB.ref(`${spaceNameForChat}/${userId}`).on('value', data => {
       const fbVal = data.val()
       if (fbVal === null) { return }
@@ -90,7 +92,7 @@ const UserIcon = (props) => {
         if(fbVal.targetUserIds === undefined) { return }
         let messageToMe = fbVal.targetUserIds.includes(myUserId)
         if(messageToMe){
-          Push.create(`${fbVal.name}さんからチャットが届きました`, {
+          Push.create(`${userName}さんからチャットが届きました`, {
             body: fbVal.message,
             icon: IconSquare,
             onClick: ev => {
@@ -98,10 +100,9 @@ const UserIcon = (props) => {
               ev.currentTarget.close()
             }
           })
-
-          setChatMessageList(current => 
-            [...current, fbVal.message]
-          )
+        setChatMessageList(current => [...current, fbVal.message])
+        setAllChatMessageToMeList(current => 
+          [...current, {name: userName, iconUrl: userIconUrl, message: fbVal.message, date: fbVal.date}])
         }
       }
     })
@@ -114,8 +115,13 @@ const UserIcon = (props) => {
       receiveUserIconPositionChange()
       receiveUserIconImageChange()
       receiveUserIconStatus()
+    }, []
+  )
+
+  useEffect(
+    () => {
       receiveMessage()
-    }, [ userId ]
+    }, [ userName, userIconUrl ]
   )
 
   useEffect(
@@ -154,7 +160,6 @@ const UserIcon = (props) => {
         {(user) => {
           return (
             <Draggable 
-            bounds="parent"
             position={{x: positionX, y: positionY}}
             onDrag={userIconOnDrag}
             onStop={userIconOnStop}

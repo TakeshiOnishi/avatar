@@ -55,7 +55,6 @@ const ChatBox = props => {
     if(nearlyUserIds.length >= 1) {
       firebaseDB.ref(`${spaceNameForChat}/${myUserId}`).set({
         message: textInput.value,
-        name: myUserName,
         date: dayjs().format('YYYY/MM/DD HH:mm:ss'),
         targetUserIds: nearlyUserIds
       })
@@ -106,7 +105,7 @@ const ChatBox = props => {
   })
 
   return (
-    <div className='chatBox' style={{
+    <div style={{
       position: 'absolute', 
       bottom: '62px', 
       right: '32px',
