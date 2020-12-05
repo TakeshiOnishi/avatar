@@ -121,7 +121,7 @@ const ChatBox = props => {
                <MenuItem key='s' value='S'>小</MenuItem>
             </Select>
           </Grid>
-          <Grid item style={{width: '300px',}}>
+          <Grid item style={{width: '320px',}}>
             <TextField onKeyPress={enterCheck} placeholder={`チャット内容 ${maxTextLength}文字まで (ENTERで送信)`} width="32" style={{width: '100%', background: '#FFF'}} />
           </Grid>
         </Grid>
