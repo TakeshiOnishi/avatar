@@ -65,22 +65,17 @@ gatsby develop
 - `gatsby build`
 - `firebase deploy`
 
+## otherCommand
+
++ `madge --exclude (layout|png|jpg|gif|scss) --image madge_graph.png src/pages/`
+
 # Note
 
 |architecture|component dependents|
 |---|---|
 |<img src="./screenshot/architecture.png" />|<img src="./madge_graph.png" />|
 
-+ `madge --exclude (layout|png|jpg|gif|scss) --image madge_graph.png src/pages/`
-
-# Author
-
-* PROGRAM
-  * [@TakeshiOnishi](https://github.com/TakeshiOnishi)
-  * [@Mocchaso](https://github.com/Mocchaso)
-  * [@tokochan1005](https://github.com/tokochan1005)
-* DESIGN
-  * [@sp-DEGU](https://github.com/sp-DEGU)
+* DESIGNED BY [@sp-DEGU](https://github.com/sp-DEGU)
 
 # License
 
