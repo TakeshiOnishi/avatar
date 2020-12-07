@@ -5,6 +5,10 @@
     - 手元に持ってきてinstallationすれば動作チェックできます。
   - ハッカソンで荒く作成したので、細部については保証しません。
 
++ image
+  + <img src="./screenshot/main.png" />
+  + <img src="./screenshot/action.gif" />
+
 # DEMO
 
 - [firebaseホスティング](https://avatar-area.web.app/)
@@ -64,7 +68,7 @@ gatsby develop
 # Note
 
 + architecture
-  + <img src="./architecture.png" />
+  + <img src="./screenshot/architecture.png" />
 + component dependents
   + <img src="./madge_graph.png" />
     + `madge --exclude (layout|png|jpg|gif|scss) --image madge_graph.png src/pages/`
